@@ -76,9 +76,14 @@ button{cursor:pointer;border:none;background:none}
 .btn-solid:hover{background:#000;border-color:#000}
 .btn-ghost{border-color:transparent;color:var(--ink-2)}
 .btn-ghost:hover{background:var(--line-2);border-color:transparent}
+.btn .sm{display:none}
 
 /* ---------- 레이아웃 ---------- */
+/* 그리드 항목은 기본값이 min-width:auto 라서 내용보다 작아지지 않는다.
+   표에 min-width 를 주면 칸 전체가 그만큼 넓어져 화면 밖으로 밀려난다.
+   min-width:0 을 줘야 칸 안에서 스크롤된다. */
 .wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:308px 1fr;gap:24px;align-items:start}
+.wrap>*{min-width:0}
 
 .panel{
   background:var(--card);border:1px solid var(--line);border-radius:12px;
@@ -166,8 +171,9 @@ button{cursor:pointer;border:none;background:none}
   max-height:calc(100vh - var(--topbar) - var(--barh) - 130px);
   border:1px solid var(--line);
   border-radius:8px;
+  max-width:100%;
 }
-.doc{background:#fff}
+.doc{background:#fff;min-width:0}
 .doc-h{margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
 .doc-h h2{font-size:21px;font-weight:900;letter-spacing:-.03em}
 .doc-h p{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);margin-top:3px}
@@ -378,18 +384,27 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 .prow.off .nm{color:var(--ink-3)}
 .ptop{display:flex;align-items:center;gap:8px}
 .ptop .nm{flex:1;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pchk{display:flex;gap:14px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line-2)}
+/* .ck 는 자동 배정의 '덮어쓰기' 체크박스에서만 쓴다 */
 .ck{
-  display:flex;align-items:center;gap:5px;cursor:pointer;
-  font-size:11.5px;font-weight:600;color:var(--ink-2);user-select:none;
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  font-size:12px;font-weight:600;color:var(--ink-2);user-select:none;
 }
-.ck input{width:14px;height:14px;accent-color:var(--ink);cursor:pointer;margin:0;flex-shrink:0}
+.ck input{width:15px;height:15px;accent-color:var(--ink);cursor:pointer;margin:0;flex-shrink:0}
 .ck:hover{color:var(--ink)}
-.ck.other{color:var(--ink-3);font-style:italic}
 .ck input:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
 
 @media(max-width:940px){
-  .wrap{grid-template-columns:1fr;padding:16px;gap:16px}
+  .wrap{grid-template-columns:1fr;padding:12px;gap:12px}
+
+  /* 상단바: 버튼이 여러 줄로 흩어지지 않도록 줄인다 */
+  .top-in{padding:10px 12px;gap:6px}
+  .brand{margin-right:auto;gap:6px}
+  .brand b{font-size:16px}
+  .brand span{display:none}
+  .btn{padding:8px 11px;font-size:12.5px;border-radius:7px}
+  .home{width:30px;height:30px;margin-right:-2px}
+  .btn .lg{display:none}
+  .btn .sm{display:inline}
   .help-content{grid-template-columns:1fr;padding:0 16px}
   .help-intro{grid-column:auto}
   .side{position:static}
@@ -405,6 +420,20 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   .nmcol{width:66px}
   td.cell{height:34px}
   .mk{font-size:11px}
+
+  /* 사이드바: 좁은 화면에서 요소가 눌리지 않게 */
+  .sec{padding:14px}
+  .mbtn{padding:9px 6px}
+  .mbtn em{font-size:10px}
+  .mbtn b{font-size:11.5px}
+  .add{flex-wrap:wrap}
+  .add .inp{min-width:0}
+  .patrow{gap:5px}
+  .pchip{width:30px;height:30px}
+  .padd{padding:7px 10px;font-size:12px}
+  .inp{font-size:16px}          /* iOS 에서 입력 시 화면이 확대되는 것을 막는다 */
+  .bsel{padding:8px 12px}
+  .day,.pbtn{padding:9px 12px}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -432,11 +461,11 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
       <span aria-hidden="true">←</span>
     </a>
     <a class="brand" href="../index.html"><h1>근무표 만들기</h1><span>baro-tools</span></a>
-    <button class="btn btn-ghost" id="reset">전체 지우기</button>
-    <button class="btn" id="load">백업 불러오기</button>
-    <button class="btn" id="backup">백업 파일 저장</button>
+    <button class="btn btn-ghost" id="reset"><span class="lg">전체 지우기</span><span class="sm">지우기</span></button>
+    <button class="btn" id="load"><span class="lg">백업 불러오기</span><span class="sm">불러오기</span></button>
+    <button class="btn" id="backup"><span class="lg">백업 파일 저장</span><span class="sm">백업</span></button>
     <button class="btn" id="print">인쇄</button>
-    <button class="btn btn-solid" id="png">이미지로 저장</button>
+    <button class="btn btn-solid" id="png"><span class="lg">이미지로 저장</span><span class="sm">이미지</span></button>
     <input type="file" id="loadfile" accept=".json,application/json" hidden>
   </div>
 </header>
