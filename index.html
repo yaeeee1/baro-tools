@@ -10,6 +10,16 @@
 <meta property="og:title" content="baro-tools — 로그인 없이 바로 쓰는 웹 도구 모음">
 <meta property="og:description" content="가입도 설치도 없이 브라우저에서 바로 쓰는 무료 웹 도구 모음.">
 <meta property="og:url" content="https://baro-tools.com/">
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name":"baro-tools",
+  "url":"https://baro-tools.com/",
+  "description":"가입과 설치 없이 브라우저에서 바로 쓰는 무료 웹 도구 모음",
+  "inLanguage":"ko-KR"
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -29,13 +39,15 @@ body{
 a{color:inherit;text-decoration:none}
 
 .top{border-bottom:1px solid var(--line);background:var(--card)}
-.top-in{max-width:940px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.top-in{max-width:940px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:22px}
 .brand{display:flex;align-items:baseline;gap:9px}
 .brand b{font-weight:900;font-size:19px;letter-spacing:-.03em}
 .brand span{
   font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
   color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase;
 }
+.nav{display:flex;gap:18px;align-items:center;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.nav a:hover{text-decoration:underline}
 
 /* 히어로 */
 .hero{max-width:940px;margin:0 auto;padding:56px 24px 40px}
@@ -86,10 +98,29 @@ a{color:inherit;text-decoration:none}
 .card.soon .meta .dot{background:var(--ink-3)}
 
 /* 설명 */
-.why{max-width:940px;margin:0 auto;padding:44px 24px 0}
+.why,.guides,.trust{max-width:940px;margin:0 auto;padding:44px 24px 0}
 .why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:26px;margin-top:16px}
 .why-item h3{font-size:14.5px;font-weight:900;margin-bottom:6px}
 .why-item p{font-size:13.5px;color:var(--ink-2);line-height:1.65}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.guide-card{
+  display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:18px;box-shadow:var(--shadow);
+}
+.guide-card:hover{border-color:var(--ink)}
+.guide-card:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.guide-card h3{font-size:14.5px;font-weight:900;margin-bottom:5px}
+.guide-card p{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.more{
+  display:inline-block;margin-top:14px;color:var(--mark);font-size:13px;font-weight:800;
+}
+.trust-box{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;
+}
+.trust-box h2{font-size:17px;font-weight:900;margin-bottom:7px}
+.trust-box p{font-size:13.5px;color:var(--ink-2);max-width:650px}
+.trust-box a{color:var(--mark);font-size:13px;font-weight:800;white-space:nowrap}
 
 footer{
   max-width:940px;margin:52px auto 0;padding:22px 24px 48px;
@@ -101,10 +132,13 @@ footer{
 .flinks a:hover{text-decoration:underline}
 
 @media(max-width:600px){
+  .top-in{align-items:flex-start;flex-direction:column;gap:8px;padding-left:18px;padding-right:18px}
+  .nav{gap:13px;flex-wrap:wrap}
   .hero{padding:38px 18px 30px}
   .hero h1{font-size:28px}
   .hero p{font-size:14.5px}
-  .tools,.why{padding-left:18px;padding-right:18px}
+  .tools,.why,.guides,.trust{padding-left:18px;padding-right:18px}
+  .trust-box{grid-template-columns:1fr}
   footer{padding-left:18px;padding-right:18px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -115,6 +149,11 @@ footer{
 <header class="top">
   <div class="top-in">
     <a class="brand" href="index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#tools">도구</a>
+      <a href="guides/index.html">활용 가이드</a>
+      <a href="about.html">운영 안내</a>
+    </nav>
   </div>
 </header>
 
@@ -132,7 +171,7 @@ footer{
   </div>
 </section>
 
-<section class="tools">
+<section class="tools" id="tools">
   <div class="sec-h">도구</div>
   <div class="grid">
 
@@ -157,6 +196,25 @@ footer{
   </div>
 </section>
 
+<section class="guides">
+  <div class="sec-h">활용 가이드</div>
+  <div class="guide-grid">
+    <a class="guide-card" href="guides/schedule/index.html">
+      <h3>근무표 작성 순서와 검토 체크리스트</h3>
+      <p>근무 유형을 정하고 배정한 뒤, 배포 전에 빠뜨린 칸과 혼동되는 표기를 확인하는 방법입니다.</p>
+    </a>
+    <a class="guide-card" href="guides/timetable/index.html">
+      <h3>학교·학원 시간표 작성 가이드</h3>
+      <p>교시형과 시각형 중 맞는 방식을 선택하고 학생·강사·공간 기준으로 충돌을 점검합니다.</p>
+    </a>
+    <a class="guide-card" href="guides/payslip/index.html">
+      <h3>급여명세서 작성 전 확인사항</h3>
+      <p>지급·공제 항목, 변동 임금의 계산방법, 교부 전에 대조할 자료를 정리했습니다.</p>
+    </a>
+  </div>
+  <a class="more" href="guides/index.html">가이드 전체 보기 →</a>
+</section>
+
 <section class="why">
   <div class="sec-h">이 사이트를 만든 이유</div>
   <div class="why-grid">
@@ -175,8 +233,21 @@ footer{
   </div>
 </section>
 
+<section class="trust">
+  <div class="sec-h">운영 원칙</div>
+  <div class="trust-box">
+    <div>
+      <h2>도구의 기능과 한계를 함께 설명합니다</h2>
+      <p>입력값은 브라우저에서 처리하며, 세무·노무처럼 공식 확인이 필요한 내용은 출처와 주의사항을 표시합니다. 오류 제보와 수정 요청은 운영 이메일로 받습니다.</p>
+    </div>
+    <a href="about.html">운영 안내 보기 →</a>
+  </div>
+</section>
+
 <footer>
   <div class="flinks">
+    <a href="guides/index.html">활용 가이드</a>
+    <a href="about.html">운영 안내</a>
     <a href="terms.html">이용약관</a>
     <a href="privacy.html">개인정보처리방침</a>
     <a href="mailto:justbarotools@gmail.com">문의</a>
