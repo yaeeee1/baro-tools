@@ -183,24 +183,25 @@ thead th{
 thead th:first-child{z-index:21}
 thead th.sat{color:#2f6fd0}
 thead th.sun{color:var(--mark)}
+thead th.hol{color:var(--mark);background:#fdeeeb}
+thead th[data-hd]{cursor:pointer}
+thead th[data-hd]:hover{background:#e8e9ee}
+td.cell.hd{background:#fef7f5}
+td.cell.hd:hover{background:var(--line-2)}
+td.cell.na{
+  background:repeating-linear-gradient(135deg,#f4f4f6 0 5px,#eceef3 5px 10px);
+  cursor:default;
+}
+td.cell.na:hover{background:repeating-linear-gradient(135deg,#f4f4f6 0 5px,#eceef3 5px 10px)}
 tbody th{
   background:#fafbfc;padding:8px 8px;text-align:left;font-weight:700;font-size:12.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .nmcol{width:84px}
-td.cell{
-  padding:0;height:34px;cursor:pointer;position:relative;z-index:0;
-  transition:background .1s;touch-action:pan-x pan-y;user-select:none;
-  -webkit-tap-highlight-color:rgba(232,80,58,.16);
-}
+td.cell{padding:0;height:34px;cursor:pointer;position:relative;z-index:0;transition:background .1s}
 td.cell:hover{background:var(--line-2)}
 td.cell.wk{background:#fbfbfd}
 td.cell.wk:hover{background:var(--line-2)}
-td.cell.inactive{
-  cursor:not-allowed;
-  background:repeating-linear-gradient(135deg,#f5f5f7,#f5f5f7 5px,#eceef2 5px,#eceef2 6px);
-}
-td.cell.inactive:hover{background:repeating-linear-gradient(135deg,#f5f5f7,#f5f5f7 5px,#eceef2 5px,#eceef2 6px)}
 .mk{
   position:absolute;inset:2px;border-radius:4px;display:grid;place-items:center;
   font-weight:900;font-size:11.5px;
@@ -277,6 +278,90 @@ tfoot th{text-align:left;padding-left:8px}
   border:1px solid var(--line);border-radius:8px;background:var(--card);
   padding:8px 10px 7px;
 }
+/* 자동 배정 */
+.patbox{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--paper)}
+.patrow{display:flex;gap:4px;flex-wrap:wrap;min-height:28px;align-items:center;margin-bottom:9px}
+.patrow .ph{font-size:11.5px;color:var(--ink-3)}
+.pchip{
+  width:26px;height:26px;border-radius:6px;display:grid;place-items:center;
+  font-weight:900;font-size:11.5px;border:none;position:relative;
+}
+.pchip:hover{outline:2px solid var(--mark);outline-offset:1px}
+.patadd{display:flex;gap:4px;flex-wrap:wrap;padding-top:9px;border-top:1px solid var(--line-2)}
+.padd{
+  padding:5px 9px;border-radius:6px;border:1px solid var(--line);background:var(--card);
+  font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:5px;transition:border-color .13s;
+}
+.padd:hover{border-color:var(--ink)}
+.padd .dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.padd.clr{color:var(--ink-3)}
+.padd.clr:hover{border-color:var(--mark);color:var(--mark)}
+/* 입사·퇴사 월 선택 버튼 */
+.pchk{display:flex;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line-2)}
+.mbtn{
+  flex:1;min-width:0;display:flex;align-items:baseline;justify-content:center;gap:5px;
+  padding:7px 6px;border:1px solid var(--line);border-radius:7px;background:var(--card);
+  transition:border-color .13s,background .13s;
+}
+.mbtn:hover{border-color:var(--ink)}
+.mbtn:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.mbtn em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--ink-3);flex-shrink:0}
+.mbtn b{font-size:12px;font-weight:700;color:var(--ink-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mbtn.set{border-color:var(--ink-3);background:#fafafa}
+.mbtn.set b{color:var(--ink)}
+
+/* 월 선택 팝업 */
+.pk{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:18px;
+  background:rgba(20,21,25,.38)}
+.pk[hidden]{display:none}
+.pk-box{width:100%;max-width:340px;background:var(--card);border-radius:14px;
+  box-shadow:0 16px 48px rgba(20,21,25,.25);overflow:hidden}
+.pk-head{display:flex;align-items:center;justify-content:space-between;
+  padding:15px 16px;border-bottom:1px solid var(--line-2);font-weight:900;font-size:15px}
+.pk-x{width:30px;height:30px;border-radius:7px;color:var(--ink-3);font-size:19px;line-height:1;
+  display:grid;place-items:center;flex-shrink:0}
+.pk-x:hover{background:var(--line-2);color:var(--ink)}
+.pk-yr{display:flex;align-items:center;justify-content:center;gap:14px;padding:13px 16px 4px}
+.pk-yr span{font-size:16px;font-weight:900;min-width:112px;text-align:center;
+  font-variant-numeric:tabular-nums}
+.pk-nav{width:34px;height:34px;border-radius:8px;color:var(--ink-2);font-size:17px;
+  display:grid;place-items:center;border:1px solid var(--line)}
+.pk-nav:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.pk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:10px 14px 6px}
+.pk-w{
+  display:grid;place-items:center;height:26px;
+  font-size:11px;font-weight:700;color:var(--ink-3);
+}
+.pk-w.sun{color:var(--mark)} .pk-w.sat{color:#2f6fd0}
+.pk-d{
+  height:38px;border-radius:8px;border:1px solid transparent;background:var(--card);
+  font-size:13px;font-weight:700;color:var(--ink-2);transition:all .1s;
+  font-variant-numeric:tabular-nums;
+}
+.pk-d.sun{color:var(--mark)} .pk-d.sat{color:#2f6fd0}
+.pk-d:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
+.pk-d.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pk-d.now{border-color:var(--mark)}
+.pk-d.on.now{color:#fff}
+.pk-d:disabled{color:var(--line);cursor:default;background:transparent}
+.pk-d:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.pk-note{
+  padding:2px 16px 0;font-size:11.5px;color:var(--ink-3);line-height:1.5;
+}
+.pk-note[hidden]{display:none}
+.pk-foot{padding:12px 16px 16px}
+.pk-clear{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;
+  font-size:13px;font-weight:700;color:var(--ink-2);transition:all .13s}
+.pk-clear:hover{border-color:var(--mark);color:var(--mark);background:var(--mark-soft)}
+
+.mv{
+  width:20px;height:22px;flex-shrink:0;border-radius:5px;
+  color:var(--ink-3);font-size:10px;line-height:1;display:grid;place-items:center;
+}
+.mv:hover{background:var(--line-2);color:var(--ink)}
+.mv:disabled{opacity:.22;cursor:default}
+.mv:disabled:hover{background:none;color:var(--ink-3)}
 .prow.off{background:#fafafa;border-style:dashed}
 .prow.off .nm{color:var(--ink-3)}
 .ptop{display:flex;align-items:center;gap:8px}
@@ -285,71 +370,35 @@ tfoot th{text-align:left;padding-left:8px}
 .ck{
   display:flex;align-items:center;gap:5px;cursor:pointer;
   font-size:11.5px;font-weight:600;color:var(--ink-2);user-select:none;
-  text-align:left;
 }
-.ck .check{
-  width:15px;height:15px;border:1.5px solid var(--ink-3);border-radius:3px;
-  display:grid;place-items:center;flex-shrink:0;background:var(--card);
-  color:#fff;font-size:10px;line-height:1;
-}
-.ck .check.on{background:var(--ink);border-color:var(--ink)}
+.ck input{width:14px;height:14px;accent-color:var(--ink);cursor:pointer;margin:0;flex-shrink:0}
 .ck:hover{color:var(--ink)}
 .ck.other{color:var(--ink-3);font-style:italic}
-.ck:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:4px}
-
-/* 입사·퇴사 날짜 선택 */
-.date-dialog{
-  width:min(420px,calc(100% - 28px));padding:0;border:0;border-radius:14px;
-  color:var(--ink);background:var(--card);box-shadow:0 20px 70px rgba(20,21,25,.28);
-}
-.date-dialog::backdrop{background:rgba(20,21,25,.48);backdrop-filter:blur(2px)}
-.date-modal{padding:22px}
-.date-modal h2{font-size:19px;font-weight:900;letter-spacing:-.03em}
-.date-who{font-size:13px;color:var(--ink-2);margin-top:4px}
-.date-field{margin-top:18px}
-.date-field label{display:block;font-size:12px;font-weight:800;color:var(--ink-2);margin-bottom:6px}
-.date-field input{
-  width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);
-  border-radius:8px;background:var(--card);font-size:16px;
-}
-.date-field input:focus{outline:2px solid var(--mark);outline-offset:1px;border-color:transparent}
-.date-note{font-size:12px;color:var(--ink-3);line-height:1.55;margin-top:9px}
-.date-error{min-height:19px;margin-top:7px;font-size:12px;font-weight:700;color:var(--mark)}
-.date-actions{display:flex;align-items:center;gap:7px;margin-top:16px}
-.date-actions .danger{color:var(--mark);margin-right:auto}
+.ck input:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
 
 @media(max-width:940px){
   .wrap{grid-template-columns:1fr;padding:16px;gap:16px}
   .help-content{grid-template-columns:1fr;padding:0 16px}
   .help-intro{grid-column:auto}
   .side{position:static}
-  .main{position:static;min-width:0;overflow:hidden}
-  .sheet,.doc{padding:10px;min-width:0;width:100%}
-  .doc{padding:0}
-  .scroller{
-    width:100%;min-width:0;max-height:65vh;overscroll-behavior:contain;
-    -webkit-overflow-scrolling:touch;
-  }
-  .scroller table{min-width:1120px}
+  .main{position:static}
+  .sheet{padding:10px}
+  .scroller{max-height:65vh}
   th,td{font-size:10px}
   thead th{font-size:9.5px;padding:5px 0}
   tbody th{font-size:11px;padding:6px 5px}
-  .nmcol{width:76px}
-  td.cell{height:38px}
-  .date-modal{padding:20px 18px}
-  .date-field input{min-height:50px}
+  .nmcol{width:60px}
+  td.cell{height:28px}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{
-  @page{size:A4 landscape;margin:8mm}
   .top,.side,.bar,.foot,.help-content{display:none!important}
   .wrap{grid-template-columns:1fr;padding:0;max-width:none}
   .panel{border:none;box-shadow:none}
   .main{position:static}
   .sheet{padding:0}
   .scroller{overflow:visible;max-height:none;border:none}
-  .scroller table{width:100%!important;min-width:0!important}
   thead th,tfoot td,tfoot th{position:static!important}
 }
 /* 이미지 저장 중에는 고정과 스크롤을 풀어 전체가 담기게 한다 */
@@ -405,7 +454,35 @@ tfoot th{text-align:left;padding-left:8px}
         <input class="inp" id="pname" placeholder="이름" maxlength="10">
         <button class="btn" id="padd">추가</button>
       </div>
-      <p class="hint"><b>입사</b> 또는 <b>퇴사</b>를 누르면 날짜 선택창이 열립니다. 선택한 재직 기간 밖의 칸은 자동으로 비활성화됩니다.</p>
+      <p class="hint"><b>입사</b>나 <b>퇴사</b>를 누르면 달력이 열립니다. 재직 기간 밖의 날짜는 표에서 빗금으로 표시되고 배정할 수 없습니다. 예를 들어 7월 20일 퇴사면 21일부터 잠기고, 8월에는 목록에서 자동으로 빠집니다.</p>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><span>자동 배정</span><span class="sub" id="patLen"></span></div>
+
+      <div class="patbox">
+        <div class="patrow" id="patRow"></div>
+        <div class="patadd" id="patAdd"></div>
+      </div>
+
+      <div class="row-2" style="margin-top:11px">
+        <div class="field" style="margin-bottom:0">
+          <label>시작일</label>
+          <input class="inp" id="patStart" type="number" min="1" max="31" value="1">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>직원마다 밀기</label>
+          <input class="inp" id="patShift" type="number" min="0" max="30" value="1">
+        </div>
+      </div>
+
+      <label class="ck" style="margin:11px 0 0">
+        <input type="checkbox" id="patOver" checked>
+        <span>이미 채워진 칸도 덮어쓰기</span>
+      </label>
+
+      <button class="btn btn-solid" id="patRun" style="width:100%;margin-top:11px">이 달에 채우기</button>
+      <p class="hint">패턴을 만들고 누르면 한 달치가 한 번에 채워집니다. <b>직원마다 밀기</b>를 1로 두면 직원끼리 하루씩 어긋나 교대가 돌아갑니다. 0이면 전원 같은 패턴이 됩니다.</p>
     </div>
 
     <div class="sec">
@@ -456,7 +533,8 @@ tfoot th{text-align:left;padding-left:8px}
 </section>
 
 <footer class="foot">
-  <b>쓰는 법</b> — 근무 유형과 직원을 등록하고, 위에서 칠할 유형을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. PC에서는 드래그로 여러 칸을 칠할 수 있고, 모바일에서는 짧게 탭해 입력하고 좌우 스와이프로 날짜를 이동합니다.<br>
+  <b>쓰는 법</b> — 근무 유형과 직원을 등록하고, 위에서 칠할 유형을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. 드래그하면 여러 칸을 한 번에 칠할 수 있습니다.<br>
+  <b>공휴일</b> — 표의 날짜를 누르면 공휴일로 지정하거나 해제할 수 있습니다. 2026년 공휴일과 매년 날짜가 같은 양력 공휴일은 자동으로 표시되며, 회사 창립일 같은 자체 휴일도 직접 지정할 수 있습니다.<br>
   <b>백업</b> — 작업 내용은 이 브라우저에만 저장됩니다. 다른 기기에서 이어서 작업하거나 기록을 오래 남기려면 백업 파일을 받아두세요. 파일 이름은 제목과 보고 있는 달로 자동으로 정해집니다.<br>
   모든 데이터는 이 브라우저 안에만 저장되며 외부로 전송되지 않습니다.
   <div class="flinks">
@@ -468,23 +546,24 @@ tfoot th{text-align:left;padding-left:8px}
   </div>
 </footer>
 
-<dialog class="date-dialog" id="employmentDialog" aria-labelledby="employmentTitle">
-  <form class="date-modal" id="employmentForm">
-    <h2 id="employmentTitle">입사일 선택</h2>
-    <p class="date-who" id="employmentWho"></p>
-    <div class="date-field">
-      <label for="employmentDate" id="employmentLabel">입사 날짜</label>
-      <input type="date" id="employmentDate" required>
-      <p class="date-note">선택한 날짜를 기준으로 근무표에서 입력 가능한 기간이 정해집니다.</p>
-      <p class="date-error" id="employmentError" role="alert"></p>
+<div class="pk" id="pk" role="dialog" aria-modal="true" aria-labelledby="pkTitle" hidden>
+  <div class="pk-box">
+    <div class="pk-head">
+      <span id="pkTitle"></span>
+      <button class="pk-x" id="pkClose" aria-label="닫기">×</button>
     </div>
-    <div class="date-actions">
-      <button type="button" class="btn btn-ghost danger" id="employmentClear">날짜 삭제</button>
-      <button type="button" class="btn" id="employmentCancel">취소</button>
-      <button type="submit" class="btn btn-solid">적용</button>
+    <div class="pk-yr">
+      <button class="pk-nav" id="pkPrev" aria-label="이전 달">‹</button>
+      <span id="pkYm"></span>
+      <button class="pk-nav" id="pkNext" aria-label="다음 달">›</button>
     </div>
-  </form>
-</dialog>
+    <div class="pk-grid" id="pkGrid"></div>
+    <p class="pk-note" id="pkNote" hidden></p>
+    <div class="pk-foot">
+      <button class="pk-clear" id="pkClear">지정 해제</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -498,11 +577,34 @@ const DEF_T=[
 const KEY='shiftsheet.v1';
 const DAYS=['일','월','화','수','목','금','토'];
 
+/* ---------- 공휴일 ----------
+   매년 날짜가 같은 양력 공휴일은 모든 연도에 자동 적용된다.
+   음력 기준(설날·추석·부처님오신날)과 대체공휴일은 연도별 표가 필요하다.
+   표에 없는 해는 양력 공휴일만 표시되며, 날짜를 눌러 직접 지정할 수 있다. */
+const FIXED_HOL={'1-1':'신정','3-1':'삼일절','5-5':'어린이날','6-6':'현충일',
+  '8-15':'광복절','10-3':'개천절','10-9':'한글날','12-25':'성탄절'};
+const LUNAR_HOL={
+  2026:{'2-16':'설날 연휴','2-17':'설날','2-18':'설날 연휴','3-2':'대체공휴일',
+        '5-24':'부처님오신날','5-25':'대체공휴일','8-17':'대체공휴일',
+        '9-24':'추석 연휴','9-25':'추석','9-26':'추석 연휴','10-5':'대체공휴일'}
+};
+const HOL_YEARS=Object.keys(LUNAR_HOL).map(Number);
+
+function holidayName(y,m,d){
+  const k=(m+1)+'-'+d;
+  const custom=S.holidays&&S.holidays[y+'-'+k];
+  if(custom==='off')return null;          // 사용자가 해제함
+  if(custom)return custom;                // 사용자가 직접 지정함
+  return (LUNAR_HOL[y]&&LUNAR_HOL[y][k]) || FIXED_HOL[k] || null;
+}
+
 let S={
   title:'근무표',
   types:JSON.parse(JSON.stringify(DEF_T)),
   people:[],
   cells:{},
+  holidays:{},
+  pattern:[],
   y:new Date().getFullYear(),
   m:new Date().getMonth()
 };
@@ -513,20 +615,24 @@ const key=(p,d)=>p+'|'+S.y+'-'+S.m+'-'+d;
 const uid=()=>Math.random().toString(36).slice(2,8);
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function monthDate(k,end){
-  if(!k||/^\d{4}-\d{2}-\d{2}$/.test(k))return k||null;
-  const hit=/^(\d{4})-(\d{1,2})$/.exec(k);
-  if(!hit)return null;
-  const y=+hit[1],m=+hit[2];
-  const d=end?new Date(y,m+1,0).getDate():1;
-  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-}
 function migrate(){
+  if(!S.holidays)S.holidays={};
+  if(!Array.isArray(S.pattern))S.pattern=[];
+  S.pattern=S.pattern.filter(id=>S.types.some(t=>t.id===id));
+  // 예전 월 단위('YYYY-M')를 일 단위로 바꾼다.
+  // 입사는 그 달 1일, 퇴사는 그 달 마지막 날로 본다.
+  S.people.forEach(p=>{
+    ['from','to'].forEach(k=>{
+      const v=p[k];
+      if(typeof v==='string'&&v.split('-').length===2){
+        const [y,m]=v.split('-').map(Number);
+        p[k]= k==='from' ? dkey(y,m,1) : dkey(y,m,lastDay(y,m));
+      }
+    });
+  });
   S.people.forEach(p=>{
     if(p.from===undefined)p.from=null;
     if(p.to===undefined)p.to=null;
-    p.from=monthDate(p.from,false);
-    p.to=monthDate(p.to,true);
   });
 }
 function load(){
@@ -561,19 +667,37 @@ function drawTypes(){
       </div>`).join('');
   }
 }
-/* 재직 기간: from/to 는 'YYYY-MM-DD' 또는 null */
-function isoDate(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
-function active(p,y,m){
-  const first=isoDate(y,m,1), last=isoDate(y,m,new Date(y,m+1,0).getDate());
-  if(p.from&&p.from>last)return false;
-  if(p.to&&p.to<first)return false;
+/* 재직 기간: from/to 는 'YYYY-M-D'(월은 0부터) 또는 null */
+function dkey(y,m,d){return y+'-'+m+'-'+d}
+function dnum(k){
+  if(!k)return null;
+  const a=k.split('-').map(Number);
+  if(a.length<3)return null;
+  return a[0]*10000+a[1]*100+a[2];
+}
+function lastDay(y,m){return new Date(y,m+1,0).getDate()}
+
+/* 그 날 하루가 재직일인가 */
+function activeDay(p,y,m,d){
+  const c=y*10000+m*100+d, f=dnum(p.from), t=dnum(p.to);
+  if(f!==null&&c<f)return false;
+  if(t!==null&&c>t)return false;
   return true;
 }
-function activeDay(p,y,m,d){
-  const cur=isoDate(y,m,d);
-  return (!p.from||cur>=p.from)&&(!p.to||cur<=p.to);
+/* 그 달에 재직일이 하루라도 있는가 (표에 행을 넣을지 판단) */
+function active(p,y,m){
+  const n=lastDay(y,m);
+  const ms=y*10000+m*100+1, me=y*10000+m*100+n;
+  const f=dnum(p.from), t=dnum(p.to);
+  if(f!==null&&me<f)return false;
+  if(t!==null&&ms>t)return false;
+  return true;
 }
-function label(k){if(!k)return'';return k.replaceAll('-','.')}
+function label(k){
+  if(!k)return'';
+  const [y,m,d]=k.split('-').map(Number);
+  return y+'.'+String(m+1).padStart(2,'0')+'.'+String(d).padStart(2,'0');
+}
 function span(p){
   if(!p.from&&!p.to)return'';
   if(p.from&&p.to)return label(p.from)+' ~ '+label(p.to);
@@ -594,20 +718,20 @@ function drawPeople(){
   $('pcount').textContent = off.length ? on.length+' / '+S.people.length+'명' : S.people.length+'명';
 
   const row=(p,dim)=>{
-    const fOn=!!p.from, tOn=!!p.to;
+    const i=S.people.indexOf(p);
     return `<div class="prow${dim?' off':''}">
       <div class="ptop">
         <span class="nm">${esc(p.name)}</span>
+        <button class="mv" data-up="${p.id}"${i===0?' disabled':''} aria-label="${esc(p.name)} 위로">▲</button>
+        <button class="mv" data-down="${p.id}"${i===S.people.length-1?' disabled':''} aria-label="${esc(p.name)} 아래로">▼</button>
         <button class="x" data-del="${p.id}" aria-label="${esc(p.name)} 삭제">×</button>
       </div>
       <div class="pchk">
-        <button type="button" class="ck" data-datekind="from" data-person="${p.id}" aria-label="${esc(p.name)} 입사일 선택">
-          <span class="check${fOn?' on':''}" aria-hidden="true">${fOn?'✓':''}</span>
-          <span>입사${fOn?' '+label(p.from):''}</span>
+        <button class="mbtn${p.from?' set':''}" data-pick="from" data-id="${p.id}">
+          <em>입사</em><b>${p.from?label(p.from):'—'}</b>
         </button>
-        <button type="button" class="ck" data-datekind="to" data-person="${p.id}" aria-label="${esc(p.name)} 퇴사일 선택">
-          <span class="check${tOn?' on':''}" aria-hidden="true">${tOn?'✓':''}</span>
-          <span>퇴사${tOn?' '+label(p.to):''}</span>
+        <button class="mbtn${p.to?' set':''}" data-pick="to" data-id="${p.id}">
+          <em>퇴사</em><b>${p.to?label(p.to):'재직중'}</b>
         </button>
       </div>
     </div>`;
@@ -619,7 +743,7 @@ function drawPeople(){
 
   if(off.length){
     h+=`<button class="fold${foldOpen?' open':''}" id="foldBtn" aria-expanded="${foldOpen}">
-          <span class="arrow">▸</span>이 달 제외 직원 ${off.length}명
+          <span class="arrow">▸</span>지난 직원 ${off.length}명
         </button>`;
     if(foldOpen) h+=`<div class="folded">${off.map(p=>row(p,true)).join('')}</div>`;
   }
@@ -668,7 +792,10 @@ function drawDoc(){
   h+='<div class="scroller"><table><thead><tr><th class="nmcol">이름</th>';
   for(let d=1;d<=n;d++){
     const w=new Date(y,m,d).getDay();
-    h+=`<th class="${w===0?'sun':w===6?'sat':''}">${d}<br><span style="font-weight:400;font-size:10px">${DAYS[w]}</span></th>`;
+    const hol=holidayName(y,m,d);
+    const cls=hol?'hol':(w===0?'sun':w===6?'sat':'');
+    h+=`<th class="${cls}" data-hd="${d}"${hol?` title="${esc(hol)}"`:''}>`
+      +`${d}<br><span style="font-weight:400;font-size:10px">${DAYS[w]}</span></th>`;
   }
   h+='</tr></thead><tbody>';
 
@@ -676,11 +803,13 @@ function drawDoc(){
     h+=`<tr><th>${esc(p.name)}</th>`;
     for(let d=1;d<=n;d++){
       const w=new Date(y,m,d).getDay();
-      const v=S.cells[key(p.id,d)];
+      const on=activeDay(p,y,m,d);
+      const v=on?S.cells[key(p.id,d)]:null;
       const t=v?tm[v]:null;
-      const available=activeDay(p,y,m,d);
-      h+=`<td class="cell ${w===0||w===6?'wk ':''}${available?'':'inactive'}" data-p="${p.id}" data-d="${d}"${available?'':` title="재직 기간이 아닙니다" aria-disabled="true"`}>`
-        +(available&&t?`<span class="mk" style="background:${t.color}1f;color:${t.color}">${t.short}</span>`:'')
+      const isHol=!!holidayName(y,m,d);
+      const cls = !on ? 'na' : (isHol?'hd':(w===0||w===6?'wk':''));
+      h+=`<td class="cell ${cls}" data-p="${p.id}" data-d="${d}"${on?'':' aria-disabled="true"'}>`
+        +(t?`<span class="mk" style="background:${t.color}1f;color:${t.color}">${t.short}</span>`:'')
         +'</td>';
     }
     h+='</tr>';
@@ -708,7 +837,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 
 function paintCell(td){
   if(!brush)return;
-  if(td.classList.contains('inactive')){toast('입사일과 퇴사일 사이의 날짜만 입력할 수 있습니다');return}
+  if(td.classList.contains('na'))return;   // 재직 기간 밖
   const k=key(td.dataset.p,+td.dataset.d);
   if(brush==='_'||mode==='del'){delete S.cells[k]}
   else{S.cells[k]=brush}
@@ -744,7 +873,7 @@ $('tadd').addEventListener('click',()=>{
   if(!n){$('tname').focus();return}
   S.types.push({id:uid(),name:n,short:s,color:pick});
   $('tname').value='';$('tshort').value='';
-  save();drawTypes();drawBrush();drawDoc();$('tname').focus();
+  save();drawTypes();drawBrush();drawPattern();drawDoc();$('tname').focus();
 });
 $('tlist').addEventListener('click',e=>{
   const b=e.target.closest('[data-del]');if(!b)return;
@@ -752,7 +881,8 @@ $('tlist').addEventListener('click',e=>{
   S.types=S.types.filter(t=>t.id!==id);
   Object.keys(S.cells).forEach(k=>{if(S.cells[k]===id)delete S.cells[k]});
   if(brush===id)brush=null;
-  save();drawTypes();drawBrush();drawDoc();
+  S.pattern=S.pattern.filter(x=>x!==id);
+  save();drawTypes();drawBrush();drawPattern();drawDoc();
 });
 $('padd').addEventListener('click',()=>{
   const n=$('pname').value.trim();
@@ -762,6 +892,19 @@ $('padd').addEventListener('click',()=>{
 });
 $('plist').addEventListener('click',e=>{
   if(e.target.closest('#foldBtn')){foldOpen=!foldOpen;drawPeople();return}
+  const pick=e.target.closest('[data-pick]');
+  if(pick){openPicker(pick.dataset.id,pick.dataset.pick);return}
+  const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-down]');
+  if(up||dn){
+    const id=(up||dn).dataset.up||(up||dn).dataset.down;
+    const i=S.people.findIndex(x=>x.id===id);
+    const j=up?i-1:i+1;
+    if(i>=0&&j>=0&&j<S.people.length){
+      [S.people[i],S.people[j]]=[S.people[j],S.people[i]];
+      save();drawPeople();drawDoc();
+    }
+    return;
+  }
   const d=e.target.closest('[data-del]');
   if(d){
     const p=S.people.find(x=>x.id===d.dataset.del);if(!p)return;
@@ -772,57 +915,85 @@ $('plist').addEventListener('click',e=>{
   }
 });
 
-const employmentDialog=$('employmentDialog');
-const employmentDate=$('employmentDate');
-let employmentEdit=null;
-function openEmploymentDialog(id,kind){
+/* ---------- 입사·퇴사 날짜 선택 팝업 ---------- */
+let pkId=null, pkKind=null, pkY=null, pkM=null;
+
+function openPicker(id,kind){
   const p=S.people.find(x=>x.id===id);if(!p)return;
-  employmentEdit={p,kind};
-  const word=kind==='from'?'입사':'퇴사';
-  $('employmentTitle').textContent=word+'일 선택';
-  $('employmentWho').textContent=p.name+' 님의 '+word+' 날짜를 선택하세요.';
-  $('employmentLabel').textContent=word+' 날짜';
-  employmentDate.value=p[kind]||'';
-  employmentDate.min=kind==='to'&&p.from?p.from:'';
-  employmentDate.max=kind==='from'&&p.to?p.to:'';
-  $('employmentError').textContent='';
-  $('employmentClear').hidden=!p[kind];
-  employmentDialog.showModal();
-  employmentDate.focus();
-  try{employmentDate.showPicker()}catch(err){}
+  pkId=id; pkKind=kind;
+  const cur=kind==='from'?p.from:p.to;
+  if(cur){const a=cur.split('-').map(Number); pkY=a[0]; pkM=a[1];}
+  else {pkY=S.y; pkM=S.m;}
+  $('pkTitle').textContent=p.name+' \u00b7 '+(kind==='from'?'입사일':'퇴사일');
+  drawPicker();
+  $('pk').hidden=false;
+  document.body.style.overflow='hidden';
 }
-$('plist').addEventListener('click',e=>{
-  const b=e.target.closest('[data-datekind]');if(!b)return;
-  openEmploymentDialog(b.dataset.person,b.dataset.datekind);
-});
-$('employmentCancel').addEventListener('click',()=>employmentDialog.close());
-$('employmentClear').addEventListener('click',()=>{
-  if(!employmentEdit)return;
-  employmentEdit.p[employmentEdit.kind]=null;
-  save();employmentDialog.close();drawPeople();drawDoc();
-  toast((employmentEdit.kind==='from'?'입사일':'퇴사일')+'을 삭제했습니다');
-});
-$('employmentForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  if(!employmentEdit)return;
-  const value=employmentDate.value;
-  if(!value){
-    $('employmentError').textContent='날짜를 선택해 주세요.';
-    employmentDate.focus();return;
+function closePicker(){
+  $('pk').hidden=true; pkId=null;
+  document.body.style.overflow='';
+}
+function drawPicker(){
+  const p=S.people.find(x=>x.id===pkId);if(!p)return;
+  const cur=pkKind==='from'?p.from:p.to;
+  const other=pkKind==='from'?p.to:p.from;   // 반대쪽 날짜 (선택 범위 제한)
+  const today=new Date();
+  $('pkYm').textContent=pkY+'년 '+(pkM+1)+'월';
+
+  const n=lastDay(pkY,pkM);
+  const firstDow=new Date(pkY,pkM,1).getDay();
+  let h='';
+  ['일','월','화','수','목','금','토'].forEach((w,i)=>{
+    h+=`<span class="pk-w${i===0?' sun':i===6?' sat':''}">${w}</span>`;
+  });
+  for(let i=0;i<firstDow;i++) h+='<span></span>';
+  for(let d=1;d<=n;d++){
+    const k=dkey(pkY,pkM,d), c=dnum(k);
+    const sel=cur===k;
+    const isToday=pkY===today.getFullYear()&&pkM===today.getMonth()&&d===today.getDate();
+    let bad=false;
+    if(other){
+      const o=dnum(other);
+      bad = pkKind==='from' ? c>o : c<o;
+    }
+    const w=new Date(pkY,pkM,d).getDay();
+    h+=`<button class="pk-d${sel?' on':''}${isToday?' now':''}${w===0?' sun':w===6?' sat':''}" data-d="${d}"${bad?' disabled':''}>${d}</button>`;
   }
-  const {p,kind}=employmentEdit;
-  if(kind==='from'&&p.to&&value>p.to){
-    $('employmentError').textContent='입사일은 퇴사일보다 늦을 수 없습니다.';return;
-  }
-  if(kind==='to'&&p.from&&value<p.from){
-    $('employmentError').textContent='퇴사일은 입사일보다 빠를 수 없습니다.';return;
-  }
-  p[kind]=value;
-  save();employmentDialog.close();drawPeople();drawDoc();
-  toast((kind==='from'?'입사일':'퇴사일')+'을 저장했습니다');
+  $('pkGrid').innerHTML=h;
+
+  const note=$('pkNote');
+  if(other){
+    note.textContent = pkKind==='from'
+      ? '퇴사일 '+label(other)+' 이후는 고를 수 없습니다.'
+      : '입사일 '+label(other)+' 이전은 고를 수 없습니다.';
+    note.hidden=false;
+  }else note.hidden=true;
+}
+function applyPick(val){
+  const p=S.people.find(x=>x.id===pkId);if(!p)return;
+  if(pkKind==='from')p.from=val; else p.to=val;
+  save();drawPeople();drawDoc();closePicker();
+}
+function pkShift(delta){
+  pkM+=delta;
+  if(pkM<0){pkM=11;pkY--} else if(pkM>11){pkM=0;pkY++}
+  drawPicker();
+}
+
+$('pkGrid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-d]');if(!b||b.disabled)return;
+  applyPick(dkey(pkY,pkM,+b.dataset.d));
 });
-employmentDialog.addEventListener('click',e=>{
-  if(e.target===employmentDialog)employmentDialog.close();
+$('pkPrev').addEventListener('click',()=>pkShift(-1));
+$('pkNext').addEventListener('click',()=>pkShift(1));
+$('pkClear').addEventListener('click',()=>applyPick(null));
+$('pkClose').addEventListener('click',closePicker);
+$('pk').addEventListener('click',e=>{if(e.target===$('pk'))closePicker()});
+document.addEventListener('keydown',e=>{
+  if($('pk').hidden)return;
+  if(e.key==='Escape')closePicker();
+  if(e.key==='ArrowLeft')pkShift(-1);
+  if(e.key==='ArrowRight')pkShift(1);
 });
 ['tname','tshort'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')$('tadd').click()}));
 $('pname').addEventListener('keydown',e=>{if(e.key==='Enter')$('padd').click()});
@@ -837,45 +1008,100 @@ $('title').addEventListener('input',e=>{S.title=e.target.value;save();
 $('prev').addEventListener('click',()=>{S.m--;if(S.m<0){S.m=11;S.y--}save();drawPeople();drawDoc()});
 $('next').addEventListener('click',()=>{S.m++;if(S.m>11){S.m=0;S.y++}save();drawPeople();drawDoc()});
 
-const doc=$('doc');
-let touchPaint=null;
-function startPaintMode(td){
-  const k=key(td.dataset.p,+td.dataset.d);
-  mode=(S.cells[k]===brush)?'del':'set';
+/* ---------- 자동 배정 ---------- */
+function drawPattern(){
+  const tm={};S.types.forEach(t=>tm[t.id]=t);
+  const row=$('patRow');
+  $('patLen').textContent=S.pattern.length?S.pattern.length+'일 주기':'';
+  row.innerHTML = S.pattern.length
+    ? S.pattern.map((id,i)=>{
+        const t=tm[id];
+        if(!t)return '';
+        return `<button class="pchip" style="background:${t.color}22;color:${t.color}"
+                 data-pi="${i}" title="${esc(t.name)} — 눌러서 빼기">${esc(t.short)}</button>`;
+      }).join('')
+    : '<span class="ph">아래에서 근무 유형을 눌러 패턴을 만드세요</span>';
+
+  $('patAdd').innerHTML = S.types.map(t=>
+    `<button class="padd" data-pa="${t.id}"><span class="dot" style="background:${t.color}"></span>${esc(t.name)}</button>`
+  ).join('') + (S.pattern.length?'<button class="padd clr" id="patClr">지우기</button>':'');
 }
-doc.addEventListener('pointerdown',e=>{
+
+$('patAdd').addEventListener('click',e=>{
+  if(e.target.closest('#patClr')){S.pattern=[];save();drawPattern();return}
+  const b=e.target.closest('[data-pa]');if(!b)return;
+  if(S.pattern.length>=31){toast('패턴은 31일까지만 만들 수 있습니다');return}
+  S.pattern.push(b.dataset.pa);save();drawPattern();
+});
+$('patRow').addEventListener('click',e=>{
+  const b=e.target.closest('[data-pi]');if(!b)return;
+  S.pattern.splice(+b.dataset.pi,1);save();drawPattern();
+});
+
+$('patRun').addEventListener('click',()=>{
+  if(!S.pattern.length){toast('먼저 패턴을 만드세요');return}
+  const roster=S.people.filter(p=>active(p,S.y,S.m));
+  if(!roster.length){toast('이 달에 근무하는 직원이 없습니다');return}
+
+  const n=new Date(S.y,S.m+1,0).getDate();
+  const start=Math.min(Math.max(parseInt($('patStart').value)||1,1),n);
+  const shift=Math.max(parseInt($('patShift').value)||0,0);
+  const over=$('patOver').checked;
+  const L=S.pattern.length;
+  let filled=0, skipped=0;
+
+  roster.forEach((p,pi)=>{
+    for(let d=start;d<=n;d++){
+      if(!activeDay(p,S.y,S.m,d))continue;   // 재직 기간 밖은 건너뛴다
+      const k=key(p.id,d);
+      if(!over&&S.cells[k]){skipped++;continue}
+      // 시작일부터 몇 번째 날인지 + 직원별 밀기
+      let idx=(d-start+pi*shift)%L;
+      if(idx<0)idx+=L;
+      S.cells[k]=S.pattern[idx];
+      filled++;
+    }
+  });
+  save();drawDoc();
+  toast(`${filled}칸을 채웠습니다`+(skipped?` (${skipped}칸은 그대로 뒀습니다)`:''));
+});
+
+const doc=$('doc');
+
+/* 날짜 머리글을 눌러 공휴일을 켜고 끈다 */
+doc.addEventListener('click',e=>{
+  const th=e.target.closest('th[data-hd]');if(!th)return;
+  const d=+th.dataset.hd;
+  const k=S.y+'-'+(S.m+1)+'-'+d;
+  const auto=(LUNAR_HOL[S.y]&&LUNAR_HOL[S.y][(S.m+1)+'-'+d])||FIXED_HOL[(S.m+1)+'-'+d]||null;
+  const cur=S.holidays[k];
+  if(cur==='off'){delete S.holidays[k]}          // 해제됨 -> 원래대로
+  else if(cur){delete S.holidays[k]}             // 직접 지정 -> 해제
+  else if(auto){S.holidays[k]='off'}             // 자동 공휴일 -> 해제
+  else{S.holidays[k]='휴일'}                      // 평일 -> 휴일 지정
+  save();drawDoc();
+});
+
+doc.addEventListener('mousedown',e=>{
   const td=e.target.closest('td.cell');if(!td)return;
   if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
-  if(e.pointerType==='touch'){
-    touchPaint={td,x:e.clientX,y:e.clientY,moved:false};
-    return;
-  }
-  if(e.button!==0)return;
-  e.preventDefault();startPaintMode(td);
+  e.preventDefault();
+  const k=key(td.dataset.p,+td.dataset.d);
+  mode=(S.cells[k]===brush)?'del':'set';
   paint=true;paintCell(td);
 });
-doc.addEventListener('pointermove',e=>{
-  if(e.pointerType==='touch'){
-    if(touchPaint&&Math.hypot(e.clientX-touchPaint.x,e.clientY-touchPaint.y)>10)touchPaint.moved=true;
-    return;
-  }
+doc.addEventListener('mouseover',e=>{
   if(!paint)return;
-  if((e.buttons&1)!==1){paint=false;mode=null;return}
-  const hit=document.elementFromPoint(e.clientX,e.clientY);
-  const td=hit&&hit.closest('td.cell');if(td)paintCell(td);
+  const td=e.target.closest('td.cell');if(td)paintCell(td);
 });
-doc.addEventListener('pointerup',e=>{
-  if(e.pointerType==='touch'&&touchPaint){
-    const start=touchPaint;touchPaint=null;
-    if(!start.moved){
-      startPaintMode(start.td);paintCell(start.td);
-      e.preventDefault();
-    }
-  }
-  paint=false;mode=null;
-});
-doc.addEventListener('pointercancel',()=>{touchPaint=null;paint=false;mode=null});
-document.addEventListener('pointerup',()=>{paint=false;mode=null});
+document.addEventListener('mouseup',()=>{paint=false;mode=null});
+doc.addEventListener('touchstart',e=>{
+  const td=e.target.closest('td.cell');if(!td)return;
+  if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
+  const k=key(td.dataset.p,+td.dataset.d);
+  mode=(S.cells[k]===brush)?'del':'set';
+  paintCell(td);
+},{passive:true});
 
 /* ---------- 파일명 자동 생성 ---------- */
 function safeName(s){
@@ -902,7 +1128,8 @@ $('backup').addEventListener('click',async()=>{
   const data={
     app:'shiftsheet',ver:1,
     savedAt:new Date().toISOString(),
-    title:S.title,types:S.types,people:S.people,cells:S.cells,y:S.y,m:S.m
+    title:S.title,types:S.types,people:S.people,cells:S.cells,
+    holidays:S.holidays,pattern:S.pattern,y:S.y,m:S.m
   };
   const json=JSON.stringify(data,null,2);
   const name=backupName();
@@ -942,6 +1169,7 @@ $('loadfile').addEventListener('change',e=>{
       if(!confirm('지금 작업 중인 내용이 백업 파일 내용으로 바뀝니다. 계속할까요?'))return;
       S.title=o.title||'근무표';
       S.types=o.types;S.people=o.people;S.cells=o.cells||{};
+      S.holidays=o.holidays||{};S.pattern=Array.isArray(o.pattern)?o.pattern:[];
       if(typeof o.y==='number')S.y=o.y;
       if(typeof o.m==='number')S.m=o.m;
       migrate();brush=null;save();init();
@@ -955,40 +1183,25 @@ $('loadfile').addEventListener('change',e=>{
   e.target.value='';
 });
 
-function mobileScheduleWidth(){
-  return Math.max(1120,116+new Date(S.y,S.m+1,0).getDate()*34);
-}
-$('print').addEventListener('click',()=>{
-  const mobile=matchMedia('(max-width:940px)').matches;
-  const oldWidth=doc.style.width;
-  if(mobile)doc.style.width=mobileScheduleWidth()+'px';
-  const cleanup=()=>{doc.style.width=oldWidth};
-  window.addEventListener('afterprint',cleanup,{once:true});
-  window.print();
-  cleanup();
-});
+$('print').addEventListener('click',()=>window.print());
 $('png').addEventListener('click',async()=>{
   if(!S.people.length||!S.types.length){toast('먼저 직원과 근무 유형을 등록하세요');return}
   toast('이미지를 만드는 중입니다');
-  const mobile=matchMedia('(max-width:940px)').matches;
-  const oldWidth=doc.style.width;
-  if(mobile)doc.style.width=mobileScheduleWidth()+'px';
   doc.classList.add('capture');
   try{
-    const options={backgroundColor:'#ffffff',scale:2};
-    if(mobile){options.width=doc.scrollWidth;options.windowWidth=doc.scrollWidth}
-    const c=await html2canvas(doc,options);
+    const c=await html2canvas(doc,{backgroundColor:'#ffffff',scale:2});
     c.toBlob(b=>{
       if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
       download(b,autoName('png'));
       toast('이미지를 저장했습니다');
     },'image/png');
   }catch(err){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요')}
-  finally{doc.classList.remove('capture');doc.style.width=oldWidth}
+  finally{doc.classList.remove('capture')}
 });
 $('reset').addEventListener('click',()=>{
   if(!confirm('직원, 근무 유형, 배정 내용이 모두 지워집니다. 계속할까요?'))return;
   S={title:'근무표',types:JSON.parse(JSON.stringify(DEF_T)),people:[],cells:{},
+     holidays:{},pattern:[],
      y:new Date().getFullYear(),m:new Date().getMonth()};
   brush=null;save();init();toast('처음 상태로 되돌렸습니다');
 });
@@ -1004,7 +1217,7 @@ window.addEventListener('resize',syncTopbar);
 
 function init(){
   $('title').value=S.title;
-  drawPal();drawTypes();drawPeople();drawBrush();drawDoc();
+  drawPal();drawTypes();drawPeople();drawBrush();drawPattern();drawDoc();
   syncTopbar();
 }
 load();init();
