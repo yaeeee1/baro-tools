@@ -180,7 +180,7 @@ thead th{
   border-top:1px solid var(--line);
   position:sticky;top:0;z-index:20;
 }
-thead th:first-child{z-index:21}
+thead th:first-child{left:0;z-index:22}
 thead th.sat{color:#2f6fd0}
 thead th.sun{color:var(--mark)}
 thead th.hol{color:var(--mark);background:#fdeeeb}
@@ -196,6 +196,7 @@ td.cell.na:hover{background:repeating-linear-gradient(135deg,#f4f4f6 0 5px,#ecee
 tbody th{
   background:#fafbfc;padding:8px 8px;text-align:left;font-weight:700;font-size:12.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  position:sticky;left:0;z-index:10;
 }
 .nmcol{width:84px}
 td.cell{padding:0;height:34px;cursor:pointer;position:relative;z-index:0;transition:background .1s}
@@ -212,7 +213,7 @@ tfoot td,tfoot th{
   border-top:1px solid var(--line);
   position:sticky;bottom:0;z-index:20;
 }
-tfoot th{text-align:left;padding-left:8px}
+tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 
 .legend{
   display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;padding-top:12px;
@@ -350,6 +351,17 @@ tfoot th{text-align:left;padding-left:8px}
   padding:2px 16px 0;font-size:11.5px;color:var(--ink-3);line-height:1.5;
 }
 .pk-note[hidden]{display:none}
+@media(max-width:480px){
+  .pk{padding:10px}
+  .pk-box{max-width:none}
+  .pk-grid{gap:2px;padding:8px 10px 4px}
+  .pk-d{height:44px;font-size:14px}
+  .pk-w{height:24px}
+  .pk-yr{padding:12px 12px 2px}
+  .pk-nav{width:38px;height:38px}
+  .pk-foot{padding:10px 12px 12px}
+  .pk-clear{padding:13px}
+}
 .pk-foot{padding:12px 16px 16px}
 .pk-clear{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;
   font-size:13px;font-weight:700;color:var(--ink-2);transition:all .13s}
@@ -383,12 +395,16 @@ tfoot th{text-align:left;padding-left:8px}
   .side{position:static}
   .main{position:static}
   .sheet{padding:10px}
-  .scroller{max-height:65vh}
-  th,td{font-size:10px}
-  thead th{font-size:9.5px;padding:5px 0}
-  tbody th{font-size:11px;padding:6px 5px}
-  .nmcol{width:60px}
-  td.cell{height:28px}
+  .scroller{max-height:70vh}
+  /* 화면 폭에 31일을 다 밀어넣으면 한 칸이 8px 밖에 안 된다.
+     최소 너비를 주고 가로로 스크롤하게 한다. 이름 열은 왼쪽에 고정된다. */
+  table{min-width:800px}
+  th,td{font-size:11px}
+  thead th{font-size:10px;padding:6px 0}
+  tbody th{font-size:12px;padding:7px 8px}
+  .nmcol{width:66px}
+  td.cell{height:34px}
+  .mk{font-size:11px}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -1082,26 +1098,46 @@ doc.addEventListener('click',e=>{
   save();drawDoc();
 });
 
-doc.addEventListener('mousedown',e=>{
-  const td=e.target.closest('td.cell');if(!td)return;
-  if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
-  e.preventDefault();
-  const k=key(td.dataset.p,+td.dataset.d);
-  mode=(S.cells[k]===brush)?'del':'set';
-  paint=true;paintCell(td);
-});
-doc.addEventListener('mouseover',e=>{
-  if(!paint)return;
-  const td=e.target.closest('td.cell');if(td)paintCell(td);
-});
-document.addEventListener('mouseup',()=>{paint=false;mode=null});
-doc.addEventListener('touchstart',e=>{
-  const td=e.target.closest('td.cell');if(!td)return;
-  if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
+/* 마우스와 터치를 포인터 이벤트로 통합한다.
+   예전처럼 mousedown 과 touchstart 를 같이 쓰면, 모바일에서 한 번 탭할 때
+   브라우저가 만들어내는 가짜 mousedown 이 한 번 더 실행돼 방금 칠한 칸이 지워진다. */
+let tapFrom=null;   // 터치 시작 지점 (탭과 스크롤을 구분하려고 기억해 둔다)
+
+function startPaint(td){
   const k=key(td.dataset.p,+td.dataset.d);
   mode=(S.cells[k]===brush)?'del':'set';
   paintCell(td);
-},{passive:true});
+}
+
+doc.addEventListener('pointerdown',e=>{
+  const td=e.target.closest('td.cell');if(!td)return;
+  if(td.classList.contains('na'))return;
+  if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
+
+  if(e.pointerType==='mouse'){
+    // 마우스는 누르는 순간 칠하고, 끌면 이어서 칠한다
+    e.preventDefault();
+    paint=true;startPaint(td);
+  }else{
+    // 터치는 손을 뗄 때 판단한다.
+    // 여기서 바로 칠하면 표를 스크롤하려고 짚었을 때도 칠해진다.
+    tapFrom={x:e.clientX,y:e.clientY,td};
+  }
+});
+doc.addEventListener('pointerover',e=>{
+  if(!paint)return;
+  const td=e.target.closest('td.cell');if(td)paintCell(td);
+});
+doc.addEventListener('pointerup',e=>{
+  if(e.pointerType!=='mouse'&&tapFrom){
+    // 거의 안 움직였으면 탭으로 본다. 움직였으면 스크롤이므로 무시한다.
+    const dx=Math.abs(e.clientX-tapFrom.x), dy=Math.abs(e.clientY-tapFrom.y);
+    if(dx<10&&dy<10&&brush)startPaint(tapFrom.td);
+  }
+  tapFrom=null;paint=false;mode=null;
+});
+document.addEventListener('pointerup',()=>{paint=false;mode=null});
+document.addEventListener('pointercancel',()=>{paint=false;mode=null;tapFrom=null});
 
 /* ---------- 파일명 자동 생성 ---------- */
 function safeName(s){
