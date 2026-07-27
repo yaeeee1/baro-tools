@@ -196,6 +196,11 @@ td.cell{
 td.cell:hover{background:var(--line-2)}
 td.cell.wk{background:#fbfbfd}
 td.cell.wk:hover{background:var(--line-2)}
+td.cell.inactive{
+  cursor:not-allowed;
+  background:repeating-linear-gradient(135deg,#f5f5f7,#f5f5f7 5px,#eceef2 5px,#eceef2 6px);
+}
+td.cell.inactive:hover{background:repeating-linear-gradient(135deg,#f5f5f7,#f5f5f7 5px,#eceef2 5px,#eceef2 6px)}
 .mk{
   position:absolute;inset:2px;border-radius:4px;display:grid;place-items:center;
   font-weight:900;font-size:11.5px;
@@ -280,11 +285,38 @@ tfoot th{text-align:left;padding-left:8px}
 .ck{
   display:flex;align-items:center;gap:5px;cursor:pointer;
   font-size:11.5px;font-weight:600;color:var(--ink-2);user-select:none;
+  text-align:left;
 }
-.ck input{width:14px;height:14px;accent-color:var(--ink);cursor:pointer;margin:0;flex-shrink:0}
+.ck .check{
+  width:15px;height:15px;border:1.5px solid var(--ink-3);border-radius:3px;
+  display:grid;place-items:center;flex-shrink:0;background:var(--card);
+  color:#fff;font-size:10px;line-height:1;
+}
+.ck .check.on{background:var(--ink);border-color:var(--ink)}
 .ck:hover{color:var(--ink)}
 .ck.other{color:var(--ink-3);font-style:italic}
-.ck input:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.ck:focus-visible{outline:2px solid var(--mark);outline-offset:2px;border-radius:4px}
+
+/* 입사·퇴사 날짜 선택 */
+.date-dialog{
+  width:min(420px,calc(100% - 28px));padding:0;border:0;border-radius:14px;
+  color:var(--ink);background:var(--card);box-shadow:0 20px 70px rgba(20,21,25,.28);
+}
+.date-dialog::backdrop{background:rgba(20,21,25,.48);backdrop-filter:blur(2px)}
+.date-modal{padding:22px}
+.date-modal h2{font-size:19px;font-weight:900;letter-spacing:-.03em}
+.date-who{font-size:13px;color:var(--ink-2);margin-top:4px}
+.date-field{margin-top:18px}
+.date-field label{display:block;font-size:12px;font-weight:800;color:var(--ink-2);margin-bottom:6px}
+.date-field input{
+  width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);
+  border-radius:8px;background:var(--card);font-size:16px;
+}
+.date-field input:focus{outline:2px solid var(--mark);outline-offset:1px;border-color:transparent}
+.date-note{font-size:12px;color:var(--ink-3);line-height:1.55;margin-top:9px}
+.date-error{min-height:19px;margin-top:7px;font-size:12px;font-weight:700;color:var(--mark)}
+.date-actions{display:flex;align-items:center;gap:7px;margin-top:16px}
+.date-actions .danger{color:var(--mark);margin-right:auto}
 
 @media(max-width:940px){
   .wrap{grid-template-columns:1fr;padding:16px;gap:16px}
@@ -304,6 +336,8 @@ tfoot th{text-align:left;padding-left:8px}
   tbody th{font-size:11px;padding:6px 5px}
   .nmcol{width:76px}
   td.cell{height:38px}
+  .date-modal{padding:20px 18px}
+  .date-field input{min-height:50px}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -371,7 +405,7 @@ tfoot th{text-align:left;padding-left:8px}
         <input class="inp" id="pname" placeholder="이름" maxlength="10">
         <button class="btn" id="padd">추가</button>
       </div>
-      <p class="hint">그만둔 달의 화면에서 <b>퇴사</b>에 체크하세요. 다음 달부터 표에서 빠지고, 지난 기록은 그대로 남습니다.</p>
+      <p class="hint"><b>입사</b> 또는 <b>퇴사</b>를 누르면 날짜 선택창이 열립니다. 선택한 재직 기간 밖의 칸은 자동으로 비활성화됩니다.</p>
     </div>
 
     <div class="sec">
@@ -434,6 +468,24 @@ tfoot th{text-align:left;padding-left:8px}
   </div>
 </footer>
 
+<dialog class="date-dialog" id="employmentDialog" aria-labelledby="employmentTitle">
+  <form class="date-modal" id="employmentForm">
+    <h2 id="employmentTitle">입사일 선택</h2>
+    <p class="date-who" id="employmentWho"></p>
+    <div class="date-field">
+      <label for="employmentDate" id="employmentLabel">입사 날짜</label>
+      <input type="date" id="employmentDate" required>
+      <p class="date-note">선택한 날짜를 기준으로 근무표에서 입력 가능한 기간이 정해집니다.</p>
+      <p class="date-error" id="employmentError" role="alert"></p>
+    </div>
+    <div class="date-actions">
+      <button type="button" class="btn btn-ghost danger" id="employmentClear">날짜 삭제</button>
+      <button type="button" class="btn" id="employmentCancel">취소</button>
+      <button type="submit" class="btn btn-solid">적용</button>
+    </div>
+  </form>
+</dialog>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -461,10 +513,20 @@ const key=(p,d)=>p+'|'+S.y+'-'+S.m+'-'+d;
 const uid=()=>Math.random().toString(36).slice(2,8);
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function monthDate(k,end){
+  if(!k||/^\d{4}-\d{2}-\d{2}$/.test(k))return k||null;
+  const hit=/^(\d{4})-(\d{1,2})$/.exec(k);
+  if(!hit)return null;
+  const y=+hit[1],m=+hit[2];
+  const d=end?new Date(y,m+1,0).getDate():1;
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
 function migrate(){
   S.people.forEach(p=>{
     if(p.from===undefined)p.from=null;
     if(p.to===undefined)p.to=null;
+    p.from=monthDate(p.from,false);
+    p.to=monthDate(p.to,true);
   });
 }
 function load(){
@@ -499,16 +561,19 @@ function drawTypes(){
       </div>`).join('');
   }
 }
-/* 재직 기간: from/to 는 'YYYY-M'(0-based month) 또는 null */
-function mkey(y,m){return y+'-'+m}
-function mnum(k){if(!k)return null;const [y,m]=k.split('-').map(Number);return y*12+m}
+/* 재직 기간: from/to 는 'YYYY-MM-DD' 또는 null */
+function isoDate(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
 function active(p,y,m){
-  const c=y*12+m, f=mnum(p.from), t=mnum(p.to);
-  if(f!==null&&c<f)return false;
-  if(t!==null&&c>t)return false;
+  const first=isoDate(y,m,1), last=isoDate(y,m,new Date(y,m+1,0).getDate());
+  if(p.from&&p.from>last)return false;
+  if(p.to&&p.to<first)return false;
   return true;
 }
-function label(k){if(!k)return'';const [y,m]=k.split('-').map(Number);return y+'.'+String(m+1).padStart(2,'0')}
+function activeDay(p,y,m,d){
+  const cur=isoDate(y,m,d);
+  return (!p.from||cur>=p.from)&&(!p.to||cur<=p.to);
+}
+function label(k){if(!k)return'';return k.replaceAll('-','.')}
 function span(p){
   if(!p.from&&!p.to)return'';
   if(p.from&&p.to)return label(p.from)+' ~ '+label(p.to);
@@ -529,23 +594,21 @@ function drawPeople(){
   $('pcount').textContent = off.length ? on.length+' / '+S.people.length+'명' : S.people.length+'명';
 
   const row=(p,dim)=>{
-    const cur=mkey(S.y,S.m);
-    const fOn=p.from===cur, tOn=p.to===cur;
-    const fOther=p.from&&!fOn, tOther=p.to&&!tOn;
+    const fOn=!!p.from, tOn=!!p.to;
     return `<div class="prow${dim?' off':''}">
       <div class="ptop">
         <span class="nm">${esc(p.name)}</span>
         <button class="x" data-del="${p.id}" aria-label="${esc(p.name)} 삭제">×</button>
       </div>
       <div class="pchk">
-        <label class="ck${fOther?' other':''}"${fOther?` title="입사월: ${label(p.from)}"`:''}>
-          <input type="checkbox" data-f="${p.id}"${fOn?' checked':''}>
-          <span>입사${fOther?' ('+label(p.from)+')':''}</span>
-        </label>
-        <label class="ck${tOther?' other':''}"${tOther?` title="퇴사월: ${label(p.to)}"`:''}>
-          <input type="checkbox" data-t="${p.id}"${tOn?' checked':''}>
-          <span>퇴사${tOther?' ('+label(p.to)+')':''}</span>
-        </label>
+        <button type="button" class="ck" data-datekind="from" data-person="${p.id}" aria-label="${esc(p.name)} 입사일 선택">
+          <span class="check${fOn?' on':''}" aria-hidden="true">${fOn?'✓':''}</span>
+          <span>입사${fOn?' '+label(p.from):''}</span>
+        </button>
+        <button type="button" class="ck" data-datekind="to" data-person="${p.id}" aria-label="${esc(p.name)} 퇴사일 선택">
+          <span class="check${tOn?' on':''}" aria-hidden="true">${tOn?'✓':''}</span>
+          <span>퇴사${tOn?' '+label(p.to):''}</span>
+        </button>
       </div>
     </div>`;
   };
@@ -556,7 +619,7 @@ function drawPeople(){
 
   if(off.length){
     h+=`<button class="fold${foldOpen?' open':''}" id="foldBtn" aria-expanded="${foldOpen}">
-          <span class="arrow">▸</span>지난 직원 ${off.length}명
+          <span class="arrow">▸</span>이 달 제외 직원 ${off.length}명
         </button>`;
     if(foldOpen) h+=`<div class="folded">${off.map(p=>row(p,true)).join('')}</div>`;
   }
@@ -615,8 +678,9 @@ function drawDoc(){
       const w=new Date(y,m,d).getDay();
       const v=S.cells[key(p.id,d)];
       const t=v?tm[v]:null;
-      h+=`<td class="cell ${w===0||w===6?'wk':''}" data-p="${p.id}" data-d="${d}">`
-        +(t?`<span class="mk" style="background:${t.color}1f;color:${t.color}">${t.short}</span>`:'')
+      const available=activeDay(p,y,m,d);
+      h+=`<td class="cell ${w===0||w===6?'wk ':''}${available?'':'inactive'}" data-p="${p.id}" data-d="${d}"${available?'':` title="재직 기간이 아닙니다" aria-disabled="true"`}>`
+        +(available&&t?`<span class="mk" style="background:${t.color}1f;color:${t.color}">${t.short}</span>`:'')
         +'</td>';
     }
     h+='</tr>';
@@ -625,6 +689,7 @@ function drawDoc(){
   for(let d=1;d<=n;d++){
     let c=0;
     roster.forEach(p=>{
+      if(!activeDay(p,y,m,d))return;
       const v=S.cells[key(p.id,d)];
       if(v&&tm[v]&&tm[v].name!=='휴무')c++;
     });
@@ -643,6 +708,7 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','
 
 function paintCell(td){
   if(!brush)return;
+  if(td.classList.contains('inactive')){toast('입사일과 퇴사일 사이의 날짜만 입력할 수 있습니다');return}
   const k=key(td.dataset.p,+td.dataset.d);
   if(brush==='_'||mode==='del'){delete S.cells[k]}
   else{S.cells[k]=brush}
@@ -659,6 +725,7 @@ function updateFoot(){
   for(let d=1;d<=n;d++){
     let c=0;
     roster.forEach(p=>{
+      if(!activeDay(p,S.y,S.m,d))return;
       const v=S.cells[key(p.id,d)];
       if(v&&tm[v]&&tm[v].name!=='휴무')c++;
     });
@@ -705,25 +772,57 @@ $('plist').addEventListener('click',e=>{
   }
 });
 
-$('plist').addEventListener('change',e=>{
-  const t=e.target;
-  const id=t.dataset.f||t.dataset.t;
-  if(!id)return;
+const employmentDialog=$('employmentDialog');
+const employmentDate=$('employmentDate');
+let employmentEdit=null;
+function openEmploymentDialog(id,kind){
   const p=S.people.find(x=>x.id===id);if(!p)return;
-  const cur=mkey(S.y,S.m);
-
-  if(t.dataset.f){
-    p.from=t.checked?cur:null;
-    if(p.from&&p.to&&mnum(p.from)>mnum(p.to)){
-      p.to=null;toast('퇴사가 입사보다 빨라 퇴사 표시를 해제했습니다');
-    }
-  }else{
-    p.to=t.checked?cur:null;
-    if(p.from&&p.to&&mnum(p.to)<mnum(p.from)){
-      p.from=null;toast('입사가 퇴사보다 늦어 입사 표시를 해제했습니다');
-    }
+  employmentEdit={p,kind};
+  const word=kind==='from'?'입사':'퇴사';
+  $('employmentTitle').textContent=word+'일 선택';
+  $('employmentWho').textContent=p.name+' 님의 '+word+' 날짜를 선택하세요.';
+  $('employmentLabel').textContent=word+' 날짜';
+  employmentDate.value=p[kind]||'';
+  employmentDate.min=kind==='to'&&p.from?p.from:'';
+  employmentDate.max=kind==='from'&&p.to?p.to:'';
+  $('employmentError').textContent='';
+  $('employmentClear').hidden=!p[kind];
+  employmentDialog.showModal();
+  employmentDate.focus();
+  try{employmentDate.showPicker()}catch(err){}
+}
+$('plist').addEventListener('click',e=>{
+  const b=e.target.closest('[data-datekind]');if(!b)return;
+  openEmploymentDialog(b.dataset.person,b.dataset.datekind);
+});
+$('employmentCancel').addEventListener('click',()=>employmentDialog.close());
+$('employmentClear').addEventListener('click',()=>{
+  if(!employmentEdit)return;
+  employmentEdit.p[employmentEdit.kind]=null;
+  save();employmentDialog.close();drawPeople();drawDoc();
+  toast((employmentEdit.kind==='from'?'입사일':'퇴사일')+'을 삭제했습니다');
+});
+$('employmentForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(!employmentEdit)return;
+  const value=employmentDate.value;
+  if(!value){
+    $('employmentError').textContent='날짜를 선택해 주세요.';
+    employmentDate.focus();return;
   }
-  save();drawPeople();drawDoc();
+  const {p,kind}=employmentEdit;
+  if(kind==='from'&&p.to&&value>p.to){
+    $('employmentError').textContent='입사일은 퇴사일보다 늦을 수 없습니다.';return;
+  }
+  if(kind==='to'&&p.from&&value<p.from){
+    $('employmentError').textContent='퇴사일은 입사일보다 빠를 수 없습니다.';return;
+  }
+  p[kind]=value;
+  save();employmentDialog.close();drawPeople();drawDoc();
+  toast((kind==='from'?'입사일':'퇴사일')+'을 저장했습니다');
+});
+employmentDialog.addEventListener('click',e=>{
+  if(e.target===employmentDialog)employmentDialog.close();
 });
 ['tname','tshort'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key==='Enter')$('tadd').click()}));
 $('pname').addEventListener('keydown',e=>{if(e.key==='Enter')$('padd').click()});
