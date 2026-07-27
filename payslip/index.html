@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>급여명세서 만들기 — 소규모 사업장을 위한 급여명세서 서식</title>
+<meta name="description" content="가입 없이 급여명세서를 만들고 인쇄하거나 이미지로 저장합니다. 지급·공제 항목을 넣으면 실수령액이 자동 계산되며, 입력한 내용은 서버로 전송되지 않습니다.">
+<link rel="canonical" href="https://baro-tools.com/payslip/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --ink:#141519;--ink-2:#4a4d57;--ink-3:#8b8f9c;
+  --line:#dcdee6;--line-2:#eceef3;--paper:#f7f7f4;--card:#fff;
+  --mark:#e8503a;--mark-soft:#fdeeeb;
+  --give:#1f6d3a;--give-soft:#eaf5ee;
+  --take:#b4432e;--take-soft:#fbeeea;
+  --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
+  --topbar:69px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Gothic A1',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+.top{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+.top-in{max-width:1240px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.home{
+  display:grid;place-items:center;flex-shrink:0;
+  width:32px;height:32px;border-radius:8px;margin-right:-6px;
+  border:1px solid var(--line);background:var(--card);
+  color:var(--ink-2);font-size:16px;line-height:1;
+  transition:border-color .14s,background .14s,color .14s;
+}
+.home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
+.brand b{font-weight:900;font-size:19px;letter-spacing:-.03em}
+.brand span{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+.btn{
+  padding:9px 16px;border-radius:8px;font-weight:700;font-size:13.5px;
+  border:1px solid var(--line);background:var(--card);
+  transition:border-color .14s,background .14s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--ink-3)}
+.btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.btn-solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-solid:hover{background:#000;border-color:#000}
+.btn-ghost{border-color:transparent;color:var(--ink-2)}
+.btn-ghost:hover{background:var(--line-2);border-color:transparent}
+
+.wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.side{max-height:calc(100vh - var(--topbar) - 48px);overflow-y:auto;position:sticky;top:calc(var(--topbar) + 24px)}
+
+.sec{padding:18px;border-bottom:1px solid var(--line-2)}
+.sec:last-child{border-bottom:none}
+.sec-h{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;
+}
+.sec-h .tag{
+  font-family:'Gothic A1';font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:0;
+}
+.tag.give{background:var(--give-soft);color:var(--give)}
+.tag.take{background:var(--take-soft);color:var(--take)}
+.hint{font-size:12px;color:var(--ink-3);line-height:1.55;margin-top:9px}
+.hint b{color:var(--ink-2);font-weight:700}
+
+.field{margin-bottom:11px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
+.inp{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;
+  background:var(--card);font-size:14px;transition:border-color .14s;
+}
+.inp:focus{outline:none;border-color:var(--ink)}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+/* 항목 줄: 이름 + 금액 + 삭제 */
+.line{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.line .lname{flex:1 1 auto;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px}
+.line .lname:focus{outline:none;border-color:var(--ink)}
+.line .lamt{width:118px;flex-shrink:0;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13.5px;text-align:right;font-variant-numeric:tabular-nums}
+.line .lamt:focus{outline:none;border-color:var(--ink)}
+.line .x{width:24px;height:24px;flex-shrink:0;border-radius:5px;color:var(--ink-3);font-size:16px;line-height:1;display:grid;place-items:center}
+.line .x:hover{background:var(--mark-soft);color:var(--mark)}
+.tx{
+  flex-shrink:0;padding:4px 7px;border-radius:5px;font-size:10.5px;font-weight:700;
+  border:1px solid var(--line);color:var(--ink-2);background:var(--card);
+  transition:all .13s;white-space:nowrap;
+}
+.tx:hover{border-color:var(--ink)}
+.tx.free{background:var(--give-soft);border-color:var(--give);color:var(--give)}
+.tx:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.break{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);
+  text-align:right;margin-top:4px;
+}
+.fr{
+  display:inline-block;margin-left:5px;padding:1px 5px;border-radius:3px;
+  background:#eaf5ee;color:#1f6d3a;font-size:9.5px;font-weight:700;vertical-align:1px;
+}
+.addline{
+  width:100%;padding:9px;border:1px dashed var(--line);border-radius:7px;
+  font-size:12.5px;font-weight:700;color:var(--ink-2);margin-top:3px;transition:border-color .14s,color .14s;
+}
+.addline:hover{border-color:var(--ink);color:var(--ink)}
+
+.subtotal{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:11px;padding-top:11px;border-top:1px solid var(--line-2);
+  font-size:13px;font-weight:700;color:var(--ink-2);
+}
+.subtotal b{font-size:15px;font-variant-numeric:tabular-nums}
+.subtotal.give b{color:var(--give)}
+.subtotal.take b{color:var(--take)}
+
+/* 세액 도우미 */
+.tools-box{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}
+.tools-box .tb-h{font-size:11.5px;font-weight:700;color:var(--ink-2);margin-bottom:9px}
+.tb-row{display:flex;gap:7px;align-items:center;margin-bottom:8px}
+.tb-row:last-child{margin-bottom:0}
+.tb-base{flex:1;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13px;text-align:right}
+.tb-base:focus{outline:none;border-color:var(--ink)}
+.tb-btn{
+  padding:8px 12px;border-radius:7px;border:1px solid var(--line);
+  font-size:12.5px;font-weight:700;white-space:nowrap;transition:all .14s;flex-shrink:0;
+}
+.tb-btn:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.tb-rate{width:66px;flex-shrink:0;padding:8px 9px;border:1px solid var(--line);border-radius:7px;font-size:13px;text-align:right}
+.tb-rate:focus{outline:none;border-color:var(--ink)}
+.tb-unit{font-size:12px;color:var(--ink-3);flex-shrink:0}
+.tb-note{font-size:11px;color:var(--ink-3);line-height:1.5;margin-top:9px}
+.tb-note b{color:var(--ink-2);font-weight:700}
+.tb-wide{
+  width:100%;padding:10px;border-radius:7px;border:1px solid var(--ink);
+  background:var(--ink);color:#fff;font-size:13px;font-weight:700;
+  margin-bottom:10px;transition:background .14s;
+}
+.tb-wide:hover{background:#000}
+.tb-wide:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.tb-wide.alt{background:var(--card);color:var(--ink);border-color:var(--line);margin-bottom:0}
+.tb-wide.alt:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tb-case{
+  background:var(--card);border:1px solid var(--line);border-radius:8px;
+  padding:12px;margin-bottom:9px;
+}
+.tb-case:last-of-type{margin-bottom:0}
+.tb-case-h{
+  font-size:11.5px;color:var(--ink-3);margin-bottom:9px;
+  padding-bottom:8px;border-bottom:1px solid var(--line-2);
+}
+.tb-case-h b{color:var(--ink);font-weight:900;font-size:12.5px}
+.rates{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.rates label{
+  display:flex;align-items:center;gap:5px;justify-content:space-between;
+  font-size:11.5px;font-weight:700;color:var(--ink-2);
+}
+.rates .tb-rate{width:62px;padding:6px 8px;font-size:12.5px}
+.tb-div{height:1px;background:var(--line);margin:14px 0 12px}
+
+/* ---------- 미리보기 (명세서) ---------- */
+.stage{padding:28px;display:flex;justify-content:center}
+.slip{
+  width:100%;max-width:640px;background:#fff;color:#111;
+  border:1px solid #222;padding:34px 32px;
+  font-size:13px;
+}
+.slip-top{text-align:center;margin-bottom:22px}
+.slip-top h1{font-size:23px;font-weight:900;letter-spacing:.08em;margin-bottom:4px}
+.slip-top .co{font-size:13px;color:#333;font-weight:700}
+.slip-top .pd{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#666;margin-top:5px}
+
+.emp{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:12.5px;table-layout:fixed}
+.emp td{border:1px solid #bbb;padding:7px 10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.emp .lb{background:#f2f2f2;font-weight:700;width:88px;white-space:nowrap;color:#333}
+
+.gt{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #222;margin-bottom:0}
+.gt .col{padding:0}
+.gt .col.l{border-right:1px solid #222}
+.col-h{
+  text-align:center;font-weight:800;font-size:13px;padding:8px;
+  background:#f2f2f2;border-bottom:1px solid #222;letter-spacing:.04em;
+}
+.rows{padding:4px 0;min-height:120px}
+.r{display:flex;justify-content:space-between;padding:5px 14px;font-size:12.5px}
+.r .rn{color:#333}
+.r .rv{font-variant-numeric:tabular-nums;font-weight:600}
+.r.tk .rv{color:#b4432e}
+.col-f{
+  display:flex;justify-content:space-between;padding:9px 14px;
+  border-top:1px solid #bbb;font-weight:800;font-size:13px;background:#fafafa;
+}
+.col-f .rv{font-variant-numeric:tabular-nums}
+.net{
+  display:flex;justify-content:space-between;align-items:center;
+  border:1px solid #222;border-top:none;padding:13px 16px;background:#f2f2f2;
+}
+.net .nl{font-size:14px;font-weight:900;letter-spacing:.04em}
+.net .nv{font-size:19px;font-weight:900;font-variant-numeric:tabular-nums}
+.slip-sign{margin-top:20px;text-align:right;font-size:11.5px;color:#555;line-height:1.9}
+.slip-note{margin-top:14px;padding-top:12px;border-top:1px solid #ddd;font-size:10.5px;color:#888;line-height:1.6}
+
+.foot{max-width:1240px;margin:0 auto;padding:28px 24px 44px;font-size:12px;color:var(--ink-3);line-height:1.7}
+.foot b{color:var(--ink-2);font-weight:700}
+.flinks{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.flinks a{color:var(--ink-2);font-weight:700;margin-right:16px;text-decoration:none}
+.flinks a:hover{text-decoration:underline}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(70px);
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:9px;
+  font-size:13.5px;font-weight:700;opacity:0;transition:all .22s;z-index:100;pointer-events:none;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:940px){
+  .wrap{grid-template-columns:1fr;padding:16px;gap:16px}
+  .side{position:static;max-height:none;overflow:visible}
+  .stage{padding:14px}
+  .slip{padding:24px 18px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  .top,.side,.foot{display:none!important}
+  .wrap{grid-template-columns:1fr;padding:0;max-width:none}
+  .panel{border:none;box-shadow:none}
+  .stage{padding:0}
+  .slip{border:1px solid #222;max-width:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="home" href="../index.html" aria-label="도구 목록으로 돌아가기"><span aria-hidden="true">←</span></a>
+    <a class="brand" href="../index.html"><b>급여명세서 만들기</b><span>baro-tools</span></a>
+    <button class="btn btn-ghost" id="reset">전체 지우기</button>
+    <button class="btn" id="load">백업 불러오기</button>
+    <button class="btn" id="backup">백업 파일 저장</button>
+    <button class="btn" id="print">인쇄</button>
+    <button class="btn btn-solid" id="png">이미지로 저장</button>
+    <input type="file" id="loadfile" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <aside class="panel side">
+    <div class="sec">
+      <div class="sec-h">기본 정보</div>
+      <div class="field">
+        <label>회사명</label>
+        <input class="inp" id="company" placeholder="예: (주)바로상사" maxlength="40">
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>귀속 연월</label>
+          <input class="inp" id="period" placeholder="숫자만 입력 (202607)" inputmode="numeric" maxlength="11">
+        </div>
+        <div class="field">
+          <label>지급일</label>
+          <input class="inp" id="paydate" placeholder="숫자만 입력 (20260725)" inputmode="numeric" maxlength="10">
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>성명</label>
+          <input class="inp" id="name" placeholder="홍길동" maxlength="20">
+        </div>
+        <div class="field">
+          <label>사번 / 부서 <span style="color:var(--ink-3);font-weight:400">(선택)</span></label>
+          <input class="inp" id="empno" placeholder="예: 영업부" maxlength="20">
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><span>지급 항목</span><span class="tag give">더하는 돈</span></div>
+      <div id="gives"></div>
+      <button class="addline" id="addGive">+ 지급 항목 추가</button>
+      <div class="subtotal give"><span>지급 합계</span><b id="sumGive">0</b></div>
+      <div class="break" id="giveBreak"></div>
+      <p class="hint">항목 이름 옆 <b>과세 / 비과세</b> 를 눌러 바꿉니다. 비과세로 표시한 항목은 4대보험과 소득세 계산에서 빠집니다. 무엇이 비과세인지는 회사 규정과 국세청 기준을 확인하세요.</p>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><span>공제 항목</span><span class="tag take">빼는 돈</span></div>
+      <div id="takes"></div>
+      <button class="addline" id="addTake">+ 공제 항목 추가</button>
+      <div class="subtotal take"><span>공제 합계</span><b id="sumTake">0</b></div>
+
+      <div class="tools-box">
+        <div class="tb-h">공제액 계산 도우미</div>
+        <div class="tb-row">
+          <input class="tb-base" id="calcBase" inputmode="numeric" placeholder="기준 금액">
+          <button class="tb-btn" id="useTaxable">과세 합계 넣기</button>
+        </div>
+        <p class="tb-note" style="margin-top:7px;margin-bottom:13px">
+          기준은 비과세를 뺀 <b id="baseInfo">과세 합계 0원</b> 입니다. 넣은 뒤 아래 <b>둘 중 하나만</b> 쓰세요.
+        </p>
+
+        <div class="tb-case">
+          <div class="tb-case-h"><b>직원</b> · 4대보험 가입자</div>
+          <button class="tb-wide" id="calc4">4대보험 한 번에 계산</button>
+          <div class="rates">
+            <label>국민연금 <input class="tb-rate" id="rPension" inputmode="decimal">%</label>
+            <label>건강보험 <input class="tb-rate" id="rHealth" inputmode="decimal">%</label>
+            <label>장기요양 <input class="tb-rate" id="rCare" inputmode="decimal">%</label>
+            <label>고용보험 <input class="tb-rate" id="rEmploy" inputmode="decimal">%</label>
+          </div>
+          <p class="tb-note">
+            <b id="rateBase">요율 기준: —</b> · 요율은 매년 바뀝니다. 다르면 위 칸에서 직접 고쳐 쓰세요.<br>
+            소득세는 부양가족 수에 따라 달라져 자동 계산에서 빠집니다. 홈택스 간이세액표를 확인해 직접 넣으세요.
+          </p>
+        </div>
+
+        <div class="tb-case">
+          <div class="tb-case-h"><b>프리랜서</b> · 사업소득 지급</div>
+          <button class="tb-wide alt" id="calc33">3.3% 원천징수 계산</button>
+          <p class="tb-note">소득세 3% + 지방소득세 0.3%. 잘 바뀌지 않는 고정값입니다.</p>
+        </div>
+
+        <div class="tb-div"></div>
+
+        <div class="tb-row">
+          <input class="tb-rate" id="rate" inputmode="decimal" placeholder="%">
+          <span class="tb-unit">%</span>
+          <button class="tb-btn" id="calcRate">직접 입력한 요율로 계산</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">저장</div>
+      <p class="hint" style="margin-top:0">작업 내용은 이 브라우저에 자동으로 남습니다. 서버로는 아무것도 전송되지 않습니다.</p>
+    </div>
+  </aside>
+
+  <main class="panel">
+    <div class="stage">
+      <div class="slip" id="slip"></div>
+    </div>
+  </main>
+</div>
+
+<footer class="foot">
+  <b>쓰는 법</b> — 왼쪽에 정보를 입력하면 오른쪽 명세서가 실시간으로 완성됩니다. 지급 합계에서 공제 합계를 뺀 실수령액이 자동으로 계산됩니다. 완성되면 인쇄하거나 이미지로 저장하세요.<br>
+  <b>참고</b> — 이 도구는 명세서 서식 작성을 돕는 도구이며, 세액이나 4대보험료의 정확성을 보증하지 않습니다. 공제 금액은 4대보험 고지서나 관할 기관의 안내를 확인해 입력하시기 바랍니다.
+  <div class="flinks">
+    <a href="../index.html">baro-tools</a>
+    <a href="../terms.html">이용약관</a>
+    <a href="../privacy.html">개인정보처리방침</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='payslip.v1';
+
+let S={
+  company:'', period:'', paydate:'', name:'', empno:'',
+  gives:[
+    {id:'g1',name:'기본급',amt:'',free:false},
+    {id:'g2',name:'식대',amt:'',free:true}
+  ],
+  takes:[
+    {id:'t1',name:'국민연금',amt:''},
+    {id:'t2',name:'건강보험',amt:''},
+    {id:'t3',name:'고용보험',amt:''},
+    {id:'t4',name:'소득세',amt:''}
+  ]
+};
+
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,8);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+const num=v=>{const n=Math.round(Number(String(v).replace(/[^0-9.-]/g,''))||0);return isFinite(n)?n:0};
+
+/* ---------- 요율 (rates.json 으로 덮어쓸 수 있음) ---------- */
+let RATES={
+  기준:'2026년 7월',
+  근로자부담:{국민연금:4.75,건강보험:3.595,장기요양:13.14,고용보험:0.9},
+  국민연금기준소득월액:{하한:410000,상한:6590000}
+};
+async function loadRates(){
+  try{
+    const res=await fetch('../rates.json',{cache:'no-cache'});
+    if(!res.ok)return;
+    const o=await res.json();
+    if(o&&o.근로자부담)RATES=Object.assign(RATES,o);
+  }catch(e){/* 로컬 파일로 열면 실패한다. 기본값을 그대로 쓴다 */}
+  applyRates();
+}
+function applyRates(){
+  const r=RATES.근로자부담;
+  $('rPension').value=r.국민연금;
+  $('rHealth').value=r.건강보험;
+  $('rCare').value=r.장기요양;
+  $('rEmploy').value=r.고용보험;
+  $('rateBase').textContent='요율 기준: '+(RATES.기준||'—');
+}
+
+/* ---------- 금액 입력 콤마 ---------- */
+function formatMoneyInput(el){
+  const raw=el.value;
+  const start=el.selectionStart;
+  // 커서 앞의 숫자 개수를 세어 두었다가 그만큼 뒤로 복원한다
+  const digitsBefore=(raw.slice(0,start).match(/\d/g)||[]).length;
+  const digits=raw.replace(/[^\d]/g,'');
+  if(!digits){el.value='';return}
+  const out=Number(digits).toLocaleString('ko-KR');
+  el.value=out;
+  let pos=0,seen=0;
+  while(pos<out.length&&seen<digitsBefore){
+    if(/\d/.test(out[pos]))seen++;
+    pos++;
+  }
+  try{el.setSelectionRange(pos,pos)}catch(e){}
+}
+
+/* ---------- 귀속 연월 자동 변환 (202607 -> 2026년 07월) ---------- */
+function formatPeriodInput(el){
+  const atEnd=el.selectionStart===el.value.length;
+  const d=el.value.replace(/[^\d]/g,'').slice(0,6);
+  const out = d.length>4 ? d.slice(0,4)+'년 '+d.slice(4)+'월' : d;
+  el.value=out;
+  if(atEnd){try{el.setSelectionRange(out.length,out.length)}catch(e){}}
+}
+
+/* ---------- 날짜 자동 하이픈 ---------- */
+function formatDateInput(el){
+  const atEnd=el.selectionStart===el.value.length;
+  let d=el.value.replace(/[^\d]/g,'').slice(0,8);
+  let out=d;
+  if(d.length>6)out=d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6);
+  else if(d.length>4)out=d.slice(0,4)+'-'+d.slice(4);
+  el.value=out;
+  if(atEnd){try{el.setSelectionRange(out.length,out.length)}catch(e){}}
+}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.gives&&o.takes)S=Object.assign(S,o)}}catch(e){}
+  S.gives.forEach(x=>{if(x.free===undefined)x.free=false});
+}
+function toast(m){
+  const t=$('toast');t.textContent=m;t.classList.add('on');
+  clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),1900);
+}
+const sumGive=()=>S.gives.reduce((a,x)=>a+num(x.amt),0);
+const sumTake=()=>S.takes.reduce((a,x)=>a+num(x.amt),0);
+const sumTaxable=()=>S.gives.reduce((a,x)=>a+(x.free?0:num(x.amt)),0);
+const sumFree=()=>S.gives.reduce((a,x)=>a+(x.free?num(x.amt):0),0);
+
+/* ---------- 항목 입력 렌더 ---------- */
+function lineHTML(kind,item){
+  const amtShown=item.amt!==''&&item.amt!=null?won(num(item.amt)):'';
+  const taxBtn = kind==='give'
+    ? `<button class="tx${item.free?' free':''}" data-role="tax" title="${item.free?'비과세 — 4대보험·소득세 기준에서 제외':'과세 — 4대보험·소득세 기준에 포함'}">${item.free?'비과세':'과세'}</button>`
+    : '';
+  return `<div class="line" data-id="${item.id}" data-kind="${kind}">
+    <input class="lname" value="${esc(item.name)}" placeholder="항목명" maxlength="20" data-role="name">
+    ${taxBtn}
+    <input class="lamt" value="${esc(amtShown)}" placeholder="0" inputmode="numeric" data-role="amt">
+    <button class="x" data-role="del" aria-label="삭제">×</button>
+  </div>`;
+}
+function drawGives(){$('gives').innerHTML=S.gives.map(x=>lineHTML('give',x)).join('')}
+function drawTakes(){$('takes').innerHTML=S.takes.map(x=>lineHTML('take',x)).join('')}
+function drawSums(){
+  $('sumGive').textContent=won(sumGive());
+  $('sumTake').textContent=won(sumTake());
+  const free=sumFree();
+  const brk=$('giveBreak');
+  if(brk){
+    brk.innerHTML = free
+      ? `과세 ${won(sumTaxable())} · 비과세 ${won(free)}`
+      : '';
+  }
+  const b=$('baseInfo');
+  if(b)b.textContent='과세 합계 '+won(sumTaxable())+'원';
+}
+
+/* ---------- 명세서 미리보기 ---------- */
+function drawSlip(){
+  const g=sumGive(), t=sumTake(), net=g-t;
+  const rowsG=S.gives.filter(x=>x.name||x.amt!=='').map(x=>
+    `<div class="r"><span class="rn">${esc(x.name||'—')}${x.free?'<span class="fr">비과세</span>':''}</span><span class="rv">${won(num(x.amt))}</span></div>`).join('')
+    || '<div class="r"><span class="rn" style="color:#aaa">항목을 입력하세요</span><span class="rv"></span></div>';
+  const rowsT=S.takes.filter(x=>x.name||x.amt!=='').map(x=>
+    `<div class="r tk"><span class="rn">${esc(x.name||'—')}</span><span class="rv">${won(num(x.amt))}</span></div>`).join('')
+    || '<div class="r"><span class="rn" style="color:#aaa">항목을 입력하세요</span><span class="rv"></span></div>';
+
+  $('slip').innerHTML=`
+    <div class="slip-top">
+      <h1>급여명세서</h1>
+      ${S.company?`<div class="co">${esc(S.company)}</div>`:''}
+      ${(S.period||S.paydate)?`<div class="pd">${esc(S.period)}${S.period&&S.paydate?' · ':''}${S.paydate?'지급일 '+esc(S.paydate):''}</div>`:''}
+    </div>
+
+    <table class="emp">
+      <colgroup>
+        <col style="width:88px"><col>
+        <col style="width:88px"><col>
+      </colgroup>
+      <tr>
+        <td class="lb">성명</td><td>${esc(S.name||'')}</td>
+        <td class="lb">사번/부서</td><td>${esc(S.empno||'')}</td>
+      </tr>
+    </table>
+
+    <div class="gt">
+      <div class="col l">
+        <div class="col-h">지급 내역</div>
+        <div class="rows">${rowsG}</div>
+        <div class="col-f"><span>지급 합계</span><span class="rv">${won(g)}</span></div>
+      </div>
+      <div class="col">
+        <div class="col-h">공제 내역</div>
+        <div class="rows">${rowsT}</div>
+        <div class="col-f"><span>공제 합계</span><span class="rv">${won(t)}</span></div>
+      </div>
+    </div>
+    <div class="net">
+      <span class="nl">실수령액 (차인지급액)</span>
+      <span class="nv">${won(net)} 원</span>
+    </div>
+
+    <div class="slip-sign">
+      위와 같이 급여를 지급합니다.<br>
+      ${esc(S.company||'')}
+    </div>
+    <div class="slip-note">
+      ${sumFree()?`과세 대상 ${won(sumTaxable())}원 · 비과세 ${won(sumFree())}원<br>`:''}
+      본 명세서는 근로기준법 제48조에 따른 임금명세서 서식으로 작성되었습니다.
+      공제 항목의 금액은 관할 기관의 고지 및 안내에 따릅니다.
+    </div>`;
+}
+
+function drawAll(){drawGives();drawTakes();drawSums();drawSlip();save()}
+
+/* ---------- 이벤트 ---------- */
+['company','name','empno'].forEach(id=>{
+  $(id).addEventListener('input',e=>{S[id]=e.target.value;drawSlip();save()});
+});
+$('period').addEventListener('input',e=>{
+  formatPeriodInput(e.target);
+  S.period=e.target.value;drawSlip();save();
+});
+$('paydate').addEventListener('input',e=>{
+  formatDateInput(e.target);
+  S.paydate=e.target.value;drawSlip();save();
+});
+$('calcBase').addEventListener('input',e=>formatMoneyInput(e.target));
+
+function bindList(boxId,arrKey){
+  $(boxId).addEventListener('input',e=>{
+    const line=e.target.closest('.line');if(!line)return;
+    const it=S[arrKey].find(x=>x.id===line.dataset.id);if(!it)return;
+    const role=e.target.dataset.role;
+    if(role==='name')it.name=e.target.value;
+    if(role==='amt'){formatMoneyInput(e.target);it.amt=e.target.value}
+    drawSums();drawSlip();save();
+  });
+  $(boxId).addEventListener('click',e=>{
+    const tax=e.target.closest('[data-role="tax"]');
+    if(tax){
+      const line=tax.closest('.line');
+      const it=S[arrKey].find(x=>x.id===line.dataset.id);
+      if(it){it.free=!it.free;drawAll()}
+      return;
+    }
+    const del=e.target.closest('[data-role="del"]');if(!del)return;
+    const line=del.closest('.line');
+    S[arrKey]=S[arrKey].filter(x=>x.id!==line.dataset.id);
+    drawAll();
+  });
+}
+bindList('gives','gives');
+bindList('takes','takes');
+
+$('addGive').addEventListener('click',()=>{
+  S.gives.push({id:uid(),name:'',amt:''});drawGives();drawSums();drawSlip();save();
+  const box=$('gives');const last=box.querySelector('.line:last-child .lname');if(last)last.focus();
+});
+$('addTake').addEventListener('click',()=>{
+  S.takes.push({id:uid(),name:'',amt:''});drawTakes();drawSums();drawSlip();save();
+  const box=$('takes');const last=box.querySelector('.line:last-child .lname');if(last)last.focus();
+});
+
+/* ---------- 공제 계산 도우미 ---------- */
+const floor10=n=>Math.floor(n/10)*10;   // 보험료는 10원 미만 절사
+
+function setTake(label,amt){
+  const found=S.takes.find(x=>x.name===label);
+  if(found)found.amt=String(amt);
+  else S.takes.push({id:uid(),name:label,amt:String(amt)});
+}
+function addTakeAmount(label,base,rate){
+  const amt=Math.round(base*rate/100);
+  S.takes.push({id:uid(),name:label,amt:String(amt)});
+  drawTakes();drawSums();drawSlip();save();
+  toast(`${label} ${won(amt)}원을 공제 항목에 추가했습니다`);
+}
+const pct=id=>{const v=Number($(id).value);return isFinite(v)&&v>0?v:0};
+
+$('useTaxable').addEventListener('click',()=>{
+  const t=sumTaxable();
+  if(!t){toast('먼저 지급 항목의 금액을 입력하세요');return}
+  $('calcBase').value=won(t);
+  toast('과세 합계 '+won(t)+'원을 기준 금액에 넣었습니다');
+});
+
+$('calc4').addEventListener('click',()=>{
+  const base=num($('calcBase').value);
+  if(!base){toast('먼저 기준 금액을 입력하세요');$('calcBase').focus();return}
+
+  const lim=RATES.국민연금기준소득월액||{하한:0,상한:Infinity};
+  const pensionBase=Math.min(Math.max(base,lim.하한||0),lim.상한||Infinity);
+
+  const pension=floor10(pensionBase*pct('rPension')/100);
+  const health =floor10(base*pct('rHealth')/100);
+  const care   =floor10(health*pct('rCare')/100);   // 건강보험료 기준
+  const employ =floor10(base*pct('rEmploy')/100);
+
+  setTake('국민연금',pension);
+  setTake('건강보험',health);
+  setTake('장기요양보험',care);
+  setTake('고용보험',employ);
+
+  drawTakes();drawSums();drawSlip();save();
+  const capped = pensionBase!==base;
+  toast(`4대보험 ${won(pension+health+care+employ)}원을 반영했습니다`
+        +(capped?' (국민연금 상·하한 적용)':''));
+});
+
+$('calc33').addEventListener('click',()=>{
+  const base=num($('calcBase').value);
+  if(!base){toast('먼저 기준 금액을 입력하세요');$('calcBase').focus();return}
+  addTakeAmount('원천징수(3.3%)',base,3.3);
+});
+$('calcRate').addEventListener('click',()=>{
+  const base=num($('calcBase').value);
+  const rate=Number($('rate').value);
+  if(!base){toast('먼저 기준 금액을 입력하세요');$('calcBase').focus();return}
+  if(!rate||rate<=0){toast('요율(%)을 입력하세요');$('rate').focus();return}
+  addTakeAmount(`공제 (${rate}%)`,base,rate);
+});
+
+/* ---------- 파일 ---------- */
+function safeName(s){return String(s).replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ').trim()}
+function baseName(){
+  const nm=safeName(S.name)||'급여명세서';
+  const pd=safeName(S.period);
+  return pd?`${pd} ${nm} 급여명세서`:`${nm} 급여명세서`;
+}
+function download(blob,name){
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$('backup').addEventListener('click',async()=>{
+  const data=Object.assign({app:'payslip',ver:1,savedAt:new Date().toISOString()},S);
+  const json=JSON.stringify(data,null,2);
+  const name=`${baseName()} 백업.json`;
+  if(window.showSaveFilePicker){
+    try{
+      const h=await window.showSaveFilePicker({suggestedName:name,
+        types:[{description:'급여명세서 백업 파일',accept:{'application/json':['.json']}}]});
+      const w=await h.createWritable();await w.write(json);await w.close();
+      toast('백업 파일을 저장했습니다');return;
+    }catch(err){if(err&&err.name==='AbortError')return}
+  }
+  download(new Blob([json],{type:'application/json'}),name);
+  toast('백업 파일을 저장했습니다');
+});
+$('load').addEventListener('click',()=>$('loadfile').click());
+$('loadfile').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const o=JSON.parse(r.result);
+      if(!o||o.app!=='payslip'||!Array.isArray(o.gives)||!Array.isArray(o.takes)){
+        toast('이 파일은 급여명세서 백업 파일이 아닙니다');return;
+      }
+      if(!confirm('지금 작업 중인 내용이 백업 파일 내용으로 바뀝니다. 계속할까요?'))return;
+      ['company','period','paydate','name','empno'].forEach(k=>S[k]=o[k]||'');
+      S.gives=o.gives;S.takes=o.takes;
+      S.gives.forEach(x=>{if(x.free===undefined)x.free=false});
+      save();init();toast('백업을 불러왔습니다');
+    }catch(err){toast('파일을 읽지 못했습니다. 백업 파일이 맞는지 확인하세요')}
+  };
+  r.onerror=()=>toast('파일을 읽지 못했습니다');
+  r.readAsText(f);e.target.value='';
+});
+
+$('print').addEventListener('click',()=>window.print());
+$('png').addEventListener('click',async()=>{
+  toast('이미지를 만드는 중입니다');
+  try{
+    const c=await html2canvas($('slip'),{backgroundColor:'#ffffff',scale:2});
+    c.toBlob(b=>{
+      if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
+      download(b,baseName()+'.png');toast('이미지를 저장했습니다');
+    },'image/png');
+  }catch(err){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요')}
+});
+$('reset').addEventListener('click',()=>{
+  if(!confirm('입력한 모든 내용이 지워집니다. 계속할까요?'))return;
+  S={company:'',period:'',paydate:'',name:'',empno:'',
+     gives:[{id:uid(),name:'기본급',amt:'',free:false},{id:uid(),name:'식대',amt:'',free:true}],
+     takes:[{id:uid(),name:'국민연금',amt:''},{id:uid(),name:'건강보험',amt:''},
+            {id:uid(),name:'고용보험',amt:''},{id:uid(),name:'소득세',amt:''}]};
+  save();init();toast('처음 상태로 되돌렸습니다');
+});
+
+function init(){
+  $('company').value=S.company;$('period').value=S.period;$('paydate').value=S.paydate;
+  $('name').value=S.name;$('empno').value=S.empno;
+  drawAll();
+}
+load();init();applyRates();loadRates();
+</script>
+</body>
+</html>
