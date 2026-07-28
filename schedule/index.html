@@ -297,6 +297,27 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 }
 .pbtn:hover{border-color:var(--ink);color:var(--ink)}
 .pbtn:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.dowbox{
+  border:1px solid var(--line);border-radius:8px;padding:11px;
+  background:var(--card);margin-bottom:10px;
+}
+.dowbox[hidden]{display:none}
+.dow-h{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-bottom:9px}
+.dow-h b{color:var(--ink-2);font-weight:700}
+.dow-none{padding:12px;text-align:center;font-size:12px;color:var(--ink-3)}
+.dow-r{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.dow-r:last-child{margin-bottom:0}
+.dow-r .dw{
+  width:20px;flex-shrink:0;text-align:center;
+  font-size:12.5px;font-weight:900;color:var(--ink-2);
+}
+.dow-r.wk .dw{color:var(--mark)}
+.dow-r:nth-last-child(2) .dw{color:#2f6fd0}
+.dw-s{flex:1;min-width:0;padding:7px 8px;font-size:12.5px}
+.dw-c{flex-shrink:0;font-size:11px;gap:4px}
+.dw-c input{width:14px;height:14px}
+.dow-btns{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:10px}
+.dow-btns .btn{font-size:12.5px;padding:9px 12px}
 .patbox{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--paper)}
 .patrun{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}
 
@@ -557,6 +578,16 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
         <button class="pbtn" data-ps="alt">격일제</button>
         <button class="pbtn" data-ps="three">3교대</button>
         <button class="pbtn" data-ps="five">주5일</button>
+        <button class="pbtn" id="dowToggle">요일별로 만들기</button>
+      </div>
+
+      <div class="dowbox" id="dowBox" hidden>
+        <div class="dow-h">요일마다 근무를 정하세요. <b>격주</b>를 켜면 그 요일만 한 주 걸러 쉽니다.</div>
+        <div id="dowRows"></div>
+        <div class="dow-btns">
+          <button class="btn btn-solid" id="dowMake">이 설정으로 패턴 만들기</button>
+          <button class="btn" id="dowFlip" title="격주로 쉬는 주를 반대로 바꿉니다">격주 뒤집기</button>
+        </div>
       </div>
 
       <div class="patbox">
@@ -600,7 +631,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
         <button class="btn btn-solid" id="patRun">이 달에 채우기</button>
         <button class="btn" id="patWipe">이 달 배정 지우기</button>
       </div>
-      <p class="hint">위 <b>빠른 설정</b>을 누르면 자주 쓰는 패턴이 한 번에 들어갑니다. 아래 <b>미리보기</b>에 결과가 바로 보이니, 숫자를 바꿔가며 확인한 뒤 채우세요.<br><b>밀기</b>는 전체를 고를 때만 씁니다. 1이면 직원끼리 하루씩 어긋나 교대가 돌아가고, 0이면 전원 같은 패턴이 됩니다.<br><b>요일에 맞추기</b>를 켜면 월요일이 주기의 첫 칸이 됩니다. 주5일이나 격주처럼 요일이 중요한 근무에 쓰세요. 끄면 시작일이 주기의 첫 칸이 됩니다.</p>
+      <p class="hint">위 <b>빠른 설정</b>으로 자주 쓰는 패턴을 한 번에 넣을 수 있습니다. 요일마다 근무가 정해져 있고 특정 요일만 격주로 쉬는 경우에는 <b>요일별로 만들기</b>를 쓰세요. 아래 <b>미리보기</b>에 결과가 바로 보이니, 확인한 뒤 채우면 됩니다.<br><b>밀기</b>는 전체를 고를 때만 씁니다. 1이면 직원끼리 하루씩 어긋나 교대가 돌아가고, 0이면 전원 같은 패턴이 됩니다.<br><b>요일에 맞추기</b>를 켜면 월요일이 주기의 첫 칸이 됩니다. 끄면 시작일이 첫 칸이 됩니다.</p>
     </div>
 
     <div class="sec">
@@ -987,7 +1018,9 @@ $('tadd').addEventListener('click',()=>{
   if(!n){$('tname').focus();return}
   S.types.push({id:uid(),name:n,short:s,color:pick});
   $('tname').value='';$('tshort').value='';
-  save();drawTypes();drawBrush();drawPattern();drawPreview();drawDoc();$('tname').focus();
+  save();drawTypes();drawBrush();drawPattern();drawPreview();drawDoc();
+  if(!$('dowBox').hidden)drawDowRows();
+  $('tname').focus();
 });
 $('tlist').addEventListener('click',e=>{
   const b=e.target.closest('[data-del]');if(!b)return;
@@ -997,6 +1030,7 @@ $('tlist').addEventListener('click',e=>{
   if(brush===id)brush=null;
   S.pattern=S.pattern.filter(x=>x!==id);
   save();drawTypes();drawBrush();drawPattern();drawPreview();drawDoc();
+  if(!$('dowBox').hidden)drawDowRows();
 });
 $('padd').addEventListener('click',()=>{
   const n=$('pname').value.trim();
@@ -1203,7 +1237,70 @@ const PRESETS={
   }}
 };
 
+/* ---------- 요일별로 패턴 만들기 ---------- */
+const DOW_NAMES=['월','화','수','목','금','토','일'];
+
+function drawDowRows(){
+  const box=$('dowRows');
+  if(!S.types.length){
+    box.innerHTML='<div class="dow-none">근무 유형을 먼저 등록하세요</div>';
+    return;
+  }
+  const prev={};
+  box.querySelectorAll('[data-dw]').forEach(sel=>{prev[sel.dataset.dw]={v:sel.value}});
+  box.querySelectorAll('[data-dwb]').forEach(c=>{if(prev[c.dataset.dwb])prev[c.dataset.dwb].b=c.checked});
+
+  box.innerHTML=DOW_NAMES.map((w,i)=>{
+    const p=prev[i]||{};
+    const opts=S.types.map(t=>
+      `<option value="${t.id}"${p.v===t.id?' selected':''}>${esc(t.name)}</option>`).join('');
+    return `<div class="dow-r${i>=5?' wk':''}">
+      <span class="dw">${w}</span>
+      <select class="inp dw-s" data-dw="${i}"><option value="">비움</option>${opts}</select>
+      <label class="ck dw-c"><input type="checkbox" data-dwb="${i}"${p.b?' checked':''}><span>격주</span></label>
+    </div>`;
+  }).join('');
+}
+
+/* 요일 설정을 14일 주기 패턴으로 바꾼다.
+   격주가 하나도 없으면 7일 주기로 줄인다. */
+function buildFromDow(){
+  const sel=[...$('dowRows').querySelectorAll('[data-dw]')];
+  if(!sel.length)return null;
+  const val=sel.map(x=>x.value);
+  const biw=[...$('dowRows').querySelectorAll('[data-dwb]')].map(x=>x.checked);
+  if(val.every(v=>!v))return null;
+
+  const anyBiweekly=biw.some(Boolean);
+  const off=findType('휴무','휴') || '';
+  const weekA=val.slice();
+  const weekB=val.map((v,i)=>biw[i] ? off : v);
+  return anyBiweekly ? [...weekA,...weekB] : weekA;
+}
+
+$('dowToggle').addEventListener('click',()=>{
+  const box=$('dowBox');
+  box.hidden=!box.hidden;
+  if(!box.hidden)drawDowRows();
+});
+$('dowMake').addEventListener('click',()=>{
+  const p=buildFromDow();
+  if(!p){toast('요일마다 근무 유형을 골라주세요');return}
+  S.pattern=p;
+  $('patDow').checked=true;      // 요일 기준이므로 반드시 켠다
+  $('patShift').value=0;         // 요일 고정이라 직원끼리 밀 필요가 없다
+  save();drawPattern();drawPreview();
+  toast(p.length+'일 주기 패턴을 만들었습니다');
+});
+$('dowFlip').addEventListener('click',()=>{
+  if(S.pattern.length!==14){toast('격주 패턴일 때만 뒤집을 수 있습니다');return}
+  S.pattern=[...S.pattern.slice(7),...S.pattern.slice(0,7)];
+  save();drawPattern();drawPreview();
+  toast('격주로 쉬는 주를 바꿨습니다');
+});
+
 $('patPreset').addEventListener('click',e=>{
+  if(e.target.closest('#dowToggle'))return;
   const b=e.target.closest('[data-ps]');if(!b)return;
   const P=PRESETS[b.dataset.ps];if(!P)return;
   const built=P.build();
@@ -1352,15 +1449,25 @@ $('patDow').addEventListener('change',drawPreview);
 
 const doc=$('doc');
 
+let tapFrom=null;   // 터치 시작 지점 (탭과 스크롤을 구분하려고 기억해 둔다)
+
+function startPaint(td){
+  const k=key(td.dataset.p,+td.dataset.d);
+  mode=(S.cells[k]===brush)?'del':'set';
+  paintCell(td);
+}
+
 doc.addEventListener('pointerdown',e=>{
   const td=e.target.closest('td.cell');if(!td)return;
   if(td.classList.contains('na'))return;
   if(!brush){toast('위에서 칠할 유형을 먼저 고르세요');return}
 
   if(e.pointerType==='mouse'){
-    // 마우스는 누르는 순간 칠하고, 끌면 이어서 칠한다
+    // 마우스는 누르는 순간 칠하고, 끌면 이어서 칠한다.
+    // 칠하기가 성공한 뒤에 끌기를 켠다. 순서를 바꾸면 오류가 났을 때 켜진 채로 남는다.
     e.preventDefault();
-    paint=true;startPaint(td);
+    startPaint(td);
+    paint=true;
   }else{
     // 터치는 손을 뗄 때 판단한다.
     // 여기서 바로 칠하면 표를 스크롤하려고 짚었을 때도 칠해진다.
@@ -1369,6 +1476,8 @@ doc.addEventListener('pointerdown',e=>{
 });
 doc.addEventListener('pointerover',e=>{
   if(!paint)return;
+  // 버튼을 떼면 멈춘다. 창 밖에서 손을 떼 pointerup 을 놓쳐도 여기서 걸린다.
+  if(e.pointerType==='mouse'&&e.buttons===0){paint=false;mode=null;return}
   const td=e.target.closest('td.cell');if(td)paintCell(td);
 });
 doc.addEventListener('pointerup',e=>{
