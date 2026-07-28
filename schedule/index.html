@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>근무표 만들기 — 5분이면 이번 달 근무표가 나옵니다</title>
-<link rel="icon" href="/favicon.ico" sizes="32x32">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#141519">
 <meta name="description" content="설치도 로그인도 없이 근무표를 만들고 이미지나 PDF로 내보냅니다. 교대근무, 시프트, 격일제 모두 가능합니다.">
 <link rel="canonical" href="https://baro-tools.com/schedule/">
 <script type="application/ld+json">
@@ -41,6 +36,9 @@ body{
   line-height:1.5;-webkit-font-smoothing:antialiased;
 }
 button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+/* 더블탭 확대만 끈다. 손가락 두 개로 벌리는 확대와 스크롤은 그대로 동작한다.
+   viewport 에 user-scalable=no 를 쓰면 확대 자체가 막혀 접근성이 나빠진다. */
+body{touch-action:manipulation}
 button{cursor:pointer;border:none;background:none}
 
 /* ---------- 헤더 ---------- */
@@ -59,8 +57,7 @@ button{cursor:pointer;border:none;background:none}
   margin-right:-6px;
   border:1px solid var(--line);background:var(--card);
   color:var(--ink-2);font-size:16px;line-height:1;
-  transition:border-color .14s,background .14s,color .14s;
-}
+  transition:border-color .14s,background .14s,color .14s;text-decoration:none;}
 .home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
 .home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
@@ -114,6 +111,7 @@ button{cursor:pointer;border:none;background:none}
 }
 .inp:focus{outline:none;border-color:var(--ink)}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
 
 /* 리스트 */
 .list{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
@@ -168,6 +166,9 @@ button{cursor:pointer;border:none;background:none}
 .bsel.on{border-color:var(--ink);background:var(--ink);color:#fff}
 .bsel .dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
 .bsel.on .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.5)}
+.bsel.era{border-style:dashed;color:var(--ink-3)}
+.bsel.era:hover{border-color:var(--mark);color:var(--mark)}
+.bsel.era.on{background:var(--mark);border-color:var(--mark);border-style:solid;color:#fff}
 
 .sheet{padding:18px}
 /* 표 자체 스크롤 박스 — 페이지 스크롤과 별개로 이 안에서 세로 스크롤 */
@@ -195,8 +196,6 @@ thead th:first-child{left:0;z-index:22}
 thead th.sat{color:#2f6fd0}
 thead th.sun{color:var(--mark)}
 thead th.hol{color:var(--mark);background:#fdeeeb}
-thead th[data-hd]{cursor:pointer}
-thead th[data-hd]:hover{background:#e8e9ee}
 td.cell.hd{background:#fef7f5}
 td.cell.hd:hover{background:var(--line-2)}
 td.cell.na{
@@ -291,7 +290,44 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   padding:8px 10px 7px;
 }
 /* 자동 배정 */
+.preset{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.pbtn{
+  padding:7px 11px;border-radius:7px;border:1px solid var(--line);background:var(--card);
+  font-size:12px;font-weight:700;color:var(--ink-2);transition:all .13s;
+}
+.pbtn:hover{border-color:var(--ink);color:var(--ink)}
+.pbtn:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
 .patbox{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--paper)}
+.patrun{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}
+
+/* 자동 배정 미리보기 */
+.prev{margin-top:11px;border:1px solid var(--line);border-radius:8px;background:var(--card);overflow:hidden}
+.prev-none{padding:16px 12px;text-align:center;font-size:12px;color:var(--ink-3)}
+.prev-h{
+  padding:8px 10px;background:var(--paper);border-bottom:1px solid var(--line-2);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:.06em;color:var(--ink-3);
+}
+.prev-scroll{overflow-x:auto}
+.prev-t{width:100%;border-collapse:collapse;table-layout:auto;min-width:0}
+.prev-t th{
+  padding:4px 1px;font-size:9px;font-weight:700;color:var(--ink-3);
+  background:transparent;border:none;text-align:center;line-height:1.15;
+}
+.prev-t th span{font-weight:400;font-size:8px}
+.prev-t th.sun{color:var(--mark)} .prev-t th.sat{color:#2f6fd0}
+.prev-t td{border:none;padding:1px}
+.prev-t .pn{
+  font-size:10.5px;font-weight:700;color:var(--ink-2);padding:2px 6px 2px 8px;
+  white-space:nowrap;max-width:52px;overflow:hidden;text-overflow:ellipsis;text-align:left;
+}
+.prev-t .pv{text-align:center}
+.prev-t .pv span{
+  display:block;border-radius:3px;font-size:9.5px;font-weight:800;
+  padding:3px 0;min-width:17px;
+}
+.prev-t .pv.off{background:repeating-linear-gradient(135deg,#f4f4f6 0 3px,#eceef3 3px 6px)}
+.prev-more{padding:6px 10px;border-top:1px solid var(--line-2);font-size:10.5px;color:var(--ink-3)}
 .patrow{display:flex;gap:4px;flex-wrap:wrap;min-height:28px;align-items:center;margin-bottom:9px}
 .patrow .ph{font-size:11.5px;color:var(--ink-3)}
 .pchip{
@@ -385,6 +421,8 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 .mv:hover{background:var(--line-2);color:var(--ink)}
 .mv:disabled{opacity:.22;cursor:default}
 .mv:disabled:hover{background:none;color:var(--ink-3)}
+.mv.era{font-size:12px}
+.mv.era:hover{background:var(--mark-soft);color:var(--mark)}
 .prow.off{background:#fafafa;border-style:dashed}
 .prow.off .nm{color:var(--ink-3)}
 .ptop{display:flex;align-items:center;gap:8px}
@@ -438,7 +476,11 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   .padd{padding:7px 10px;font-size:12px}
   .inp{font-size:16px}          /* iOS 에서 입력 시 화면이 확대되는 것을 막는다 */
   .bsel{padding:8px 12px}
-  .day,.pbtn{padding:9px 12px}
+  .day{padding:9px 12px}
+  .pbtn{padding:9px 11px;font-size:12.5px}
+  .row-3{grid-template-columns:1fr 1fr 1fr;gap:6px}
+  .prev-t .pn{max-width:44px;font-size:10px}
+  .prev-t .pv span{font-size:9px;min-width:15px}
 }
 
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -510,18 +552,39 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
     <div class="sec">
       <div class="sec-h"><span>자동 배정</span><span class="sub" id="patLen"></span></div>
 
+      <div class="preset" id="patPreset">
+        <button class="pbtn" data-ps="week2">격주 교대</button>
+        <button class="pbtn" data-ps="alt">격일제</button>
+        <button class="pbtn" data-ps="three">3교대</button>
+        <button class="pbtn" data-ps="five">주5일</button>
+      </div>
+
       <div class="patbox">
         <div class="patrow" id="patRow"></div>
         <div class="patadd" id="patAdd"></div>
       </div>
 
-      <div class="row-2" style="margin-top:11px">
+      <label class="ck" id="patDowWrap" style="margin:10px 0 0">
+        <input type="checkbox" id="patDow">
+        <span>요일에 맞추기 (월요일부터 주기 시작)</span>
+      </label>
+
+      <div class="field" style="margin-top:11px;margin-bottom:0">
+        <label>대상</label>
+        <select class="inp" id="patWho"></select>
+      </div>
+
+      <div class="row-3" style="margin-top:9px">
         <div class="field" style="margin-bottom:0">
           <label>시작일</label>
           <input class="inp" id="patStart" type="number" min="1" max="31" value="1">
         </div>
         <div class="field" style="margin-bottom:0">
-          <label>직원마다 밀기</label>
+          <label>종료일</label>
+          <input class="inp" id="patEnd" type="number" min="1" max="31" value="31">
+        </div>
+        <div class="field" style="margin-bottom:0" id="patShiftWrap">
+          <label>밀기</label>
           <input class="inp" id="patShift" type="number" min="0" max="30" value="1">
         </div>
       </div>
@@ -531,8 +594,13 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
         <span>이미 채워진 칸도 덮어쓰기</span>
       </label>
 
-      <button class="btn btn-solid" id="patRun" style="width:100%;margin-top:11px">이 달에 채우기</button>
-      <p class="hint">패턴을 만들고 누르면 한 달치가 한 번에 채워집니다. <b>직원마다 밀기</b>를 1로 두면 직원끼리 하루씩 어긋나 교대가 돌아갑니다. 0이면 전원 같은 패턴이 됩니다.</p>
+      <div class="prev" id="patPrev"></div>
+
+      <div class="patrun">
+        <button class="btn btn-solid" id="patRun">이 달에 채우기</button>
+        <button class="btn" id="patWipe">이 달 배정 지우기</button>
+      </div>
+      <p class="hint">위 <b>빠른 설정</b>을 누르면 자주 쓰는 패턴이 한 번에 들어갑니다. 아래 <b>미리보기</b>에 결과가 바로 보이니, 숫자를 바꿔가며 확인한 뒤 채우세요.<br><b>밀기</b>는 전체를 고를 때만 씁니다. 1이면 직원끼리 하루씩 어긋나 교대가 돌아가고, 0이면 전원 같은 패턴이 됩니다.<br><b>요일에 맞추기</b>를 켜면 월요일이 주기의 첫 칸이 됩니다. 주5일이나 격주처럼 요일이 중요한 근무에 쓰세요. 끄면 시작일이 주기의 첫 칸이 됩니다.</p>
     </div>
 
     <div class="sec">
@@ -583,8 +651,8 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 </section>
 
 <footer class="foot">
-  <b>쓰는 법</b> — 근무 유형과 직원을 등록하고, 위에서 칠할 유형을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. 드래그하면 여러 칸을 한 번에 칠할 수 있습니다.<br>
-  <b>공휴일</b> — 표의 날짜를 누르면 공휴일로 지정하거나 해제할 수 있습니다. 2026년 공휴일과 매년 날짜가 같은 양력 공휴일은 자동으로 표시되며, 회사 창립일 같은 자체 휴일도 직접 지정할 수 있습니다.<br>
+  <b>쓰는 법</b> — 근무 유형과 직원을 등록하고, 위에서 칠할 유형을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. PC에서는 드래그로 여러 칸을 한 번에 칠할 수 있습니다.<br><b>지우기</b> — 칸 하나씩 지우려면 위의 <b>지우개</b>를 고르고 칸을 누르세요. 직원 이름 옆 <b>⌫</b>는 그 사람의 이 달 배정만, <b>이 달 배정 지우기</b>는 이 달 전체만 지웁니다. 셋 다 직원 목록과 다른 달 기록은 건드리지 않습니다.<br>
+  <b>공휴일</b> — 법정 공휴일은 표에 빨갛게 표시됩니다. 2026년 공휴일과 매년 날짜가 같은 양력 공휴일이 대상이며, 창립기념일 같은 회사 자체 휴일은 표시되지 않습니다.<br>
   <b>백업</b> — 작업 내용은 이 브라우저에만 저장됩니다. 다른 기기에서 이어서 작업하거나 기록을 오래 남기려면 백업 파일을 받아두세요. 파일 이름은 제목과 보고 있는 달로 자동으로 정해집니다.<br>
   모든 데이터는 이 브라우저 안에만 저장되며 외부로 전송되지 않습니다.
   <div class="flinks">
@@ -642,9 +710,6 @@ const HOL_YEARS=Object.keys(LUNAR_HOL).map(Number);
 
 function holidayName(y,m,d){
   const k=(m+1)+'-'+d;
-  const custom=S.holidays&&S.holidays[y+'-'+k];
-  if(custom==='off')return null;          // 사용자가 해제함
-  if(custom)return custom;                // 사용자가 직접 지정함
   return (LUNAR_HOL[y]&&LUNAR_HOL[y][k]) || FIXED_HOL[k] || null;
 }
 
@@ -653,7 +718,6 @@ let S={
   types:JSON.parse(JSON.stringify(DEF_T)),
   people:[],
   cells:{},
-  holidays:{},
   pattern:[],
   y:new Date().getFullYear(),
   m:new Date().getMonth()
@@ -666,7 +730,6 @@ const uid=()=>Math.random().toString(36).slice(2,8);
 
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function migrate(){
-  if(!S.holidays)S.holidays={};
   if(!Array.isArray(S.pattern))S.pattern=[];
   S.pattern=S.pattern.filter(id=>S.types.some(t=>t.id===id));
   // 예전 월 단위('YYYY-M')를 일 단위로 바꾼다.
@@ -774,6 +837,7 @@ function drawPeople(){
         <span class="nm">${esc(p.name)}</span>
         <button class="mv" data-up="${p.id}"${i===0?' disabled':''} aria-label="${esc(p.name)} 위로">▲</button>
         <button class="mv" data-down="${p.id}"${i===S.people.length-1?' disabled':''} aria-label="${esc(p.name)} 아래로">▼</button>
+        <button class="mv era" data-wipe="${p.id}" title="이 달 배정만 지우기" aria-label="${esc(p.name)} 이 달 배정 지우기">⌫</button>
         <button class="x" data-del="${p.id}" aria-label="${esc(p.name)} 삭제">×</button>
       </div>
       <div class="pchk">
@@ -807,7 +871,7 @@ function drawBrush(){
     <button class="bsel ${brush===t.id?'on':''}" data-b="${t.id}">
       <span class="dot" style="background:${t.color}"></span>${esc(t.name)}
     </button>`).join('')+
-    `<button class="bsel ${brush==='_'?'on':''}" data-b="_">지우개</button>`;
+    `<button class="bsel era${brush==='_'?' on':''}" data-b="_">지우개</button>`;
 }
 
 /* ---------- 표 ---------- */
@@ -844,7 +908,7 @@ function drawDoc(){
     const w=new Date(y,m,d).getDay();
     const hol=holidayName(y,m,d);
     const cls=hol?'hol':(w===0?'sun':w===6?'sat':'');
-    h+=`<th class="${cls}" data-hd="${d}"${hol?` title="${esc(hol)}"`:''}>`
+    h+=`<th class="${cls}"${hol?` title="${esc(hol)}"`:''}>`
       +`${d}<br><span style="font-weight:400;font-size:10px">${DAYS[w]}</span></th>`;
   }
   h+='</tr></thead><tbody>';
@@ -923,7 +987,7 @@ $('tadd').addEventListener('click',()=>{
   if(!n){$('tname').focus();return}
   S.types.push({id:uid(),name:n,short:s,color:pick});
   $('tname').value='';$('tshort').value='';
-  save();drawTypes();drawBrush();drawPattern();drawDoc();$('tname').focus();
+  save();drawTypes();drawBrush();drawPattern();drawPreview();drawDoc();$('tname').focus();
 });
 $('tlist').addEventListener('click',e=>{
   const b=e.target.closest('[data-del]');if(!b)return;
@@ -932,18 +996,29 @@ $('tlist').addEventListener('click',e=>{
   Object.keys(S.cells).forEach(k=>{if(S.cells[k]===id)delete S.cells[k]});
   if(brush===id)brush=null;
   S.pattern=S.pattern.filter(x=>x!==id);
-  save();drawTypes();drawBrush();drawPattern();drawDoc();
+  save();drawTypes();drawBrush();drawPattern();drawPreview();drawDoc();
 });
 $('padd').addEventListener('click',()=>{
   const n=$('pname').value.trim();
   if(!n){$('pname').focus();return}
   S.people.push({id:uid(),name:n,from:null,to:null});
-  $('pname').value='';save();drawPeople();drawDoc();$('pname').focus();
+  $('pname').value='';save();drawPeople();drawWho();drawPreview();drawDoc();$('pname').focus();
 });
 $('plist').addEventListener('click',e=>{
   if(e.target.closest('#foldBtn')){foldOpen=!foldOpen;drawPeople();return}
   const pick=e.target.closest('[data-pick]');
   if(pick){openPicker(pick.dataset.id,pick.dataset.pick);return}
+  const wipe=e.target.closest('[data-wipe]');
+  if(wipe){
+    const p=S.people.find(x=>x.id===wipe.dataset.wipe);if(!p)return;
+    const n=lastDay(S.y,S.m);
+    let c=0;
+    for(let d=1;d<=n;d++){const k=key(p.id,d);if(S.cells[k]){delete S.cells[k];c++}}
+    if(!c){toast(p.name+' 님은 이 달에 배정된 칸이 없습니다');return}
+    save();drawDoc();
+    toast(`${p.name} 님의 ${S.m+1}월 배정 ${c}칸을 지웠습니다`);
+    return;
+  }
   const up=e.target.closest('[data-up]'), dn=e.target.closest('[data-down]');
   if(up||dn){
     const id=(up||dn).dataset.up||(up||dn).dataset.down;
@@ -951,7 +1026,7 @@ $('plist').addEventListener('click',e=>{
     const j=up?i-1:i+1;
     if(i>=0&&j>=0&&j<S.people.length){
       [S.people[i],S.people[j]]=[S.people[j],S.people[i]];
-      save();drawPeople();drawDoc();
+      save();drawPeople();drawWho();drawPreview();drawDoc();
     }
     return;
   }
@@ -961,7 +1036,7 @@ $('plist').addEventListener('click',e=>{
     if(!confirm(p.name+' 님을 완전히 삭제합니다.\n지난 달을 포함한 모든 근무 기록이 함께 지워지며 되돌릴 수 없습니다.\n\n기록을 남기려면 대신 퇴사에 체크하세요.\n\n삭제할까요?'))return;
     S.people=S.people.filter(x=>x.id!==p.id);
     Object.keys(S.cells).forEach(k=>{if(k.startsWith(p.id+'|'))delete S.cells[k]});
-    save();drawPeople();drawDoc();
+    save();drawPeople();drawWho();drawPreview();drawDoc();
   }
 });
 
@@ -1022,7 +1097,7 @@ function drawPicker(){
 function applyPick(val){
   const p=S.people.find(x=>x.id===pkId);if(!p)return;
   if(pkKind==='from')p.from=val; else p.to=val;
-  save();drawPeople();drawDoc();closePicker();
+  save();drawPeople();drawWho();drawPreview();drawDoc();closePicker();
 }
 function pkShift(delta){
   pkM+=delta;
@@ -1055,10 +1130,151 @@ $('brushes').addEventListener('click',e=>{
 $('title').addEventListener('input',e=>{S.title=e.target.value;save();
   const h=document.querySelector('.doc-h h2');if(h)h.textContent=e.target.value||'근무표';});
 
-$('prev').addEventListener('click',()=>{S.m--;if(S.m<0){S.m=11;S.y--}save();drawPeople();drawDoc()});
-$('next').addEventListener('click',()=>{S.m++;if(S.m>11){S.m=0;S.y++}save();drawPeople();drawDoc()});
+$('prev').addEventListener('click',()=>{S.m--;if(S.m<0){S.m=11;S.y--}save();drawPeople();drawWho();syncRange();drawPreview();drawDoc()});
+$('next').addEventListener('click',()=>{S.m++;if(S.m>11){S.m=0;S.y++}save();drawPeople();drawWho();syncRange();drawPreview();drawDoc()});
 
 /* ---------- 자동 배정 ---------- */
+function drawWho(){
+  const sel=$('patWho');
+  const keep=sel.value;
+  const roster=S.people.filter(p=>active(p,S.y,S.m));
+  sel.innerHTML='<option value="*">전체 ('+roster.length+'명)</option>'
+    + roster.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  // 고른 사람이 그대로 있으면 유지한다
+  if(keep&&[...sel.options].some(o=>o.value===keep))sel.value=keep;
+  syncShiftVisibility();
+}
+function syncRange(){
+  const n=lastDay(S.y,S.m);
+  const st=$('patStart'), en=$('patEnd');
+  st.max=n; en.max=n;
+  if(!en.value||+en.value>n)en.value=n;
+  if(+st.value>n)st.value=n;
+}
+function syncShiftVisibility(){
+  // 한 사람만 고르면 '밀기'는 의미가 없다
+  const one=$('patWho').value!=='*';
+  $('patShiftWrap').style.visibility=one?'hidden':'visible';
+}
+/* ---------- 패턴 계산 (미리보기와 실제 채우기가 같은 식을 쓴다) ---------- */
+const EPOCH_MON=Math.floor(Date.UTC(2024,0,1)/86400000);   // 2024-01-01 은 월요일
+const dayNo=(y,m,d)=>Math.floor(Date.UTC(y,m,d)/86400000);
+
+function patIndex(pi,d,a,L,shift,alignDow){
+  let i;
+  if(alignDow){
+    // 월요일을 주기의 첫 칸으로 맞춘다. 달이 바뀌어도 요일이 어긋나지 않는다.
+    i=(dayNo(S.y,S.m,d)-EPOCH_MON)+pi*shift;
+  }else{
+    i=(d-a)+pi*shift;
+  }
+  i%=L; if(i<0)i+=L;
+  return i;
+}
+
+/* 자주 쓰는 패턴 */
+function findType(...words){
+  for(const w of words){
+    const t=S.types.find(x=>x.name.includes(w)||x.short===w);
+    if(t)return t.id;
+  }
+  return null;
+}
+const PRESETS={
+  week2:{label:'격주 교대',dow:true,shift:7,build:()=>{
+    const a=findType('주간','주'), b=findType('야간','야');
+    if(!a||!b)return null;
+    return [...Array(7).fill(a),...Array(7).fill(b)];
+  }},
+  alt:{label:'격일제',dow:false,shift:1,build:()=>{
+    const a=findType('주간','근무','주'), h=findType('휴무','비번','휴');
+    if(!a||!h)return null;
+    return [a,h];
+  }},
+  three:{label:'3교대',dow:false,shift:1,build:()=>{
+    const a=findType('주간','주'), b=findType('야간','야'), h=findType('휴무','휴');
+    if(!a||!b||!h)return null;
+    return [a,a,b,b,h,h];
+  }},
+  five:{label:'주5일',dow:true,shift:0,build:()=>{
+    const a=findType('주간','근무','주'), h=findType('휴무','휴');
+    if(!a||!h)return null;
+    return [a,a,a,a,a,h,h];
+  }}
+};
+
+$('patPreset').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ps]');if(!b)return;
+  const P=PRESETS[b.dataset.ps];if(!P)return;
+  const built=P.build();
+  if(!built){toast('근무 유형에 주간·야간·휴무가 필요합니다');return}
+  S.pattern=built;
+  $('patDow').checked=P.dow;
+  $('patShift').value=P.shift;
+  save();drawPattern();drawPreview();
+  toast(P.label+' 패턴을 넣었습니다');
+});
+
+/* 대상 직원 목록과 적용 범위를 구한다 */
+function patTargets(){
+  const who=$('patWho').value;
+  const roster=S.people.filter(p=>active(p,S.y,S.m));
+  return who==='*'?roster:roster.filter(p=>p.id===who);
+}
+function patRange(){
+  const n=lastDay(S.y,S.m);
+  let a=parseInt($('patStart').value)||1;
+  let b=parseInt($('patEnd').value)||n;
+  a=Math.min(Math.max(a,1),n);
+  b=Math.min(Math.max(b,1),n);
+  if(a>b)[a,b]=[b,a];
+  return {a,b,n};
+}
+
+/* 누르기 전에 결과를 보여준다 */
+function drawPreview(){
+  const box=$('patPrev');
+  if(!S.pattern.length){
+    box.innerHTML='<div class="prev-none">패턴을 만들면 여기에 결과가 미리 보입니다</div>';
+    return;
+  }
+  const roster=patTargets();
+  if(!roster.length){
+    box.innerHTML='<div class="prev-none">대상 직원이 없습니다</div>';
+    return;
+  }
+  const tm={};S.types.forEach(t=>tm[t.id]=t);
+  const {a,b}=patRange();
+  const shift=$('patWho').value==='*' ? Math.max(parseInt($('patShift').value)||0,0) : 0;
+  const dow=$('patDow').checked;
+  const L=S.pattern.length;
+
+  const days=Math.min(14,b-a+1);
+  const show=roster.slice(0,5);
+  const DW=['일','월','화','수','목','금','토'];
+
+  let h='<div class="prev-h">미리보기 · '+a+'일부터 '+days+'일</div>';
+  h+='<div class="prev-scroll"><table class="prev-t"><tr><th></th>';
+  for(let i=0;i<days;i++){
+    const d=a+i, w=new Date(S.y,S.m,d).getDay();
+    h+=`<th class="${w===0?'sun':w===6?'sat':''}">${d}<br><span>${DW[w]}</span></th>`;
+  }
+  h+='</tr>';
+  show.forEach((p,pi)=>{
+    h+=`<tr><td class="pn">${esc(p.name)}</td>`;
+    for(let i=0;i<days;i++){
+      const d=a+i;
+      if(!activeDay(p,S.y,S.m,d)){h+='<td class="pv off"></td>';continue}
+      const t=tm[S.pattern[patIndex(pi,d,a,L,shift,dow)]];
+      h+=t?`<td class="pv"><span style="background:${t.color}22;color:${t.color}">${esc(t.short)}</span></td>`:'<td class="pv"></td>';
+    }
+    h+='</tr>';
+  });
+  h+='</table></div>';
+  if(roster.length>show.length)h+=`<div class="prev-more">외 ${roster.length-show.length}명도 같은 방식으로 채워집니다</div>`;
+  box.innerHTML=h;
+}
+
 function drawPattern(){
   const tm={};S.types.forEach(t=>tm[t.id]=t);
   const row=$('patRow');
@@ -1078,70 +1294,63 @@ function drawPattern(){
 }
 
 $('patAdd').addEventListener('click',e=>{
-  if(e.target.closest('#patClr')){S.pattern=[];save();drawPattern();return}
+  if(e.target.closest('#patClr')){S.pattern=[];save();drawPattern();drawPreview();return}
   const b=e.target.closest('[data-pa]');if(!b)return;
   if(S.pattern.length>=31){toast('패턴은 31일까지만 만들 수 있습니다');return}
-  S.pattern.push(b.dataset.pa);save();drawPattern();
+  S.pattern.push(b.dataset.pa);save();drawPattern();drawPreview();
 });
 $('patRow').addEventListener('click',e=>{
   const b=e.target.closest('[data-pi]');if(!b)return;
-  S.pattern.splice(+b.dataset.pi,1);save();drawPattern();
+  S.pattern.splice(+b.dataset.pi,1);save();drawPattern();drawPreview();
 });
 
 $('patRun').addEventListener('click',()=>{
   if(!S.pattern.length){toast('먼저 패턴을 만드세요');return}
-  const roster=S.people.filter(p=>active(p,S.y,S.m));
-  if(!roster.length){toast('이 달에 근무하는 직원이 없습니다');return}
+  const roster=patTargets();
+  if(!roster.length){toast('대상 직원이 없습니다');return}
 
-  const n=new Date(S.y,S.m+1,0).getDate();
-  const start=Math.min(Math.max(parseInt($('patStart').value)||1,1),n);
-  const shift=Math.max(parseInt($('patShift').value)||0,0);
+  const {a,b}=patRange();
+  const shift=$('patWho').value==='*' ? Math.max(parseInt($('patShift').value)||0,0) : 0;
+  const dow=$('patDow').checked;
   const over=$('patOver').checked;
   const L=S.pattern.length;
   let filled=0, skipped=0;
 
   roster.forEach((p,pi)=>{
-    for(let d=start;d<=n;d++){
-      if(!activeDay(p,S.y,S.m,d))continue;   // 재직 기간 밖은 건너뛴다
+    for(let d=a;d<=b;d++){
+      if(!activeDay(p,S.y,S.m,d))continue;
       const k=key(p.id,d);
       if(!over&&S.cells[k]){skipped++;continue}
-      // 시작일부터 몇 번째 날인지 + 직원별 밀기
-      let idx=(d-start+pi*shift)%L;
-      if(idx<0)idx+=L;
-      S.cells[k]=S.pattern[idx];
+      S.cells[k]=S.pattern[patIndex(pi,d,a,L,shift,dow)];
       filled++;
     }
   });
   save();drawDoc();
-  toast(`${filled}칸을 채웠습니다`+(skipped?` (${skipped}칸은 그대로 뒀습니다)`:''));
+  const who=$('patWho').value==='*'?'':roster[0].name+' ';
+  toast(`${who}${a}~${b}일 ${filled}칸을 채웠습니다`+(skipped?` (${skipped}칸은 그대로)`:''));
 });
+
+$('patWipe').addEventListener('click',()=>{
+  const roster=patTargets();
+  if(!roster.length){toast('대상 직원이 없습니다');return}
+  const {a,b}=patRange();
+  let c=0;
+  roster.forEach(p=>{for(let d=a;d<=b;d++)if(S.cells[key(p.id,d)])c++});
+  if(!c){toast('지울 배정이 없습니다');return}
+  const who=$('patWho').value==='*'?'전원':roster[0].name+' 님';
+  if(!confirm(`${who}의 ${S.m+1}월 ${a}~${b}일 배정 ${c}칸을 지웁니다.\n직원과 근무 유형, 다른 기간은 그대로 남습니다.\n\n계속할까요?`))return;
+  roster.forEach(p=>{for(let d=a;d<=b;d++)delete S.cells[key(p.id,d)]});
+  save();drawDoc();
+  toast(`${c}칸을 지웠습니다`);
+});
+
+$('patWho').addEventListener('change',()=>{syncShiftVisibility();drawPreview()});
+['patStart','patEnd','patShift'].forEach(id=>{
+  $(id).addEventListener('input',drawPreview);
+});
+$('patDow').addEventListener('change',drawPreview);
 
 const doc=$('doc');
-
-/* 날짜 머리글을 눌러 공휴일을 켜고 끈다 */
-doc.addEventListener('click',e=>{
-  const th=e.target.closest('th[data-hd]');if(!th)return;
-  const d=+th.dataset.hd;
-  const k=S.y+'-'+(S.m+1)+'-'+d;
-  const auto=(LUNAR_HOL[S.y]&&LUNAR_HOL[S.y][(S.m+1)+'-'+d])||FIXED_HOL[(S.m+1)+'-'+d]||null;
-  const cur=S.holidays[k];
-  if(cur==='off'){delete S.holidays[k]}          // 해제됨 -> 원래대로
-  else if(cur){delete S.holidays[k]}             // 직접 지정 -> 해제
-  else if(auto){S.holidays[k]='off'}             // 자동 공휴일 -> 해제
-  else{S.holidays[k]='휴일'}                      // 평일 -> 휴일 지정
-  save();drawDoc();
-});
-
-/* 마우스와 터치를 포인터 이벤트로 통합한다.
-   예전처럼 mousedown 과 touchstart 를 같이 쓰면, 모바일에서 한 번 탭할 때
-   브라우저가 만들어내는 가짜 mousedown 이 한 번 더 실행돼 방금 칠한 칸이 지워진다. */
-let tapFrom=null;   // 터치 시작 지점 (탭과 스크롤을 구분하려고 기억해 둔다)
-
-function startPaint(td){
-  const k=key(td.dataset.p,+td.dataset.d);
-  mode=(S.cells[k]===brush)?'del':'set';
-  paintCell(td);
-}
 
 doc.addEventListener('pointerdown',e=>{
   const td=e.target.closest('td.cell');if(!td)return;
@@ -1199,7 +1408,7 @@ $('backup').addEventListener('click',async()=>{
     app:'shiftsheet',ver:1,
     savedAt:new Date().toISOString(),
     title:S.title,types:S.types,people:S.people,cells:S.cells,
-    holidays:S.holidays,pattern:S.pattern,y:S.y,m:S.m
+    pattern:S.pattern,y:S.y,m:S.m
   };
   const json=JSON.stringify(data,null,2);
   const name=backupName();
@@ -1239,7 +1448,7 @@ $('loadfile').addEventListener('change',e=>{
       if(!confirm('지금 작업 중인 내용이 백업 파일 내용으로 바뀝니다. 계속할까요?'))return;
       S.title=o.title||'근무표';
       S.types=o.types;S.people=o.people;S.cells=o.cells||{};
-      S.holidays=o.holidays||{};S.pattern=Array.isArray(o.pattern)?o.pattern:[];
+      S.pattern=Array.isArray(o.pattern)?o.pattern:[];
       if(typeof o.y==='number')S.y=o.y;
       if(typeof o.m==='number')S.m=o.m;
       migrate();brush=null;save();init();
@@ -1271,7 +1480,7 @@ $('png').addEventListener('click',async()=>{
 $('reset').addEventListener('click',()=>{
   if(!confirm('직원, 근무 유형, 배정 내용이 모두 지워집니다. 계속할까요?'))return;
   S={title:'근무표',types:JSON.parse(JSON.stringify(DEF_T)),people:[],cells:{},
-     holidays:{},pattern:[],
+     pattern:[],
      y:new Date().getFullYear(),m:new Date().getMonth()};
   brush=null;save();init();toast('처음 상태로 되돌렸습니다');
 });
@@ -1287,7 +1496,7 @@ window.addEventListener('resize',syncTopbar);
 
 function init(){
   $('title').value=S.title;
-  drawPal();drawTypes();drawPeople();drawBrush();drawPattern();drawDoc();
+  drawPal();drawTypes();drawPeople();drawBrush();drawPattern();drawWho();syncRange();drawPreview();drawDoc();
   syncTopbar();
 }
 load();init();
