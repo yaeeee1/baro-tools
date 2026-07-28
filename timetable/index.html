@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>시간표 만들기 — 학교·학원·과외 시간표를 바로 만들고 인쇄</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#141519">
 <meta name="description" content="가입 없이 시간표를 만들고 이미지나 인쇄물로 뽑습니다. 교시 단위와 시각 단위를 모두 지원하며, 입력한 내용은 서버로 전송되지 않습니다.">
 <link rel="canonical" href="https://baro-tools.com/timetable/">
 <script type="application/ld+json">
@@ -153,11 +158,7 @@ tbody th{
   color:var(--ink-2);line-height:1.3;
 }
 .tcol{width:76px}
-td.cell{
-  padding:0;height:46px;cursor:pointer;position:relative;z-index:0;
-  transition:background .1s;touch-action:pan-x pan-y;user-select:none;
-  -webkit-tap-highlight-color:rgba(232,80,58,.16);
-}
+td.cell{padding:0;height:46px;cursor:pointer;position:relative;z-index:0;transition:background .1s}
 td.cell:hover{background:var(--line-2)}
 .mk{
   position:absolute;inset:2px;border-radius:4px;display:grid;place-items:center;
@@ -199,17 +200,12 @@ td.cell:hover{background:var(--line-2)}
   .help-content{grid-template-columns:1fr;padding:0 16px}
   .help-intro{grid-column:auto}
   .side{position:static}
-  .main{position:static;min-width:0;overflow:hidden}
-  .sheet,.doc{min-width:0;width:100%}
+  .main{position:static}
   .sheet{padding:10px}
-  .scroller{
-    width:100%;min-width:0;max-height:65vh;overscroll-behavior:contain;
-    -webkit-overflow-scrolling:touch;
-  }
-  .scroller table{min-width:680px}
+  .scroller{max-height:65vh}
   th,td{font-size:11px}
-  .tcol{width:72px}
-  td.cell{height:46px}
+  .tcol{width:58px}
+  td.cell{height:40px}
   .mk{font-size:10.5px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -321,7 +317,7 @@ td.cell:hover{background:var(--line-2)}
 </section>
 
 <footer class="foot">
-  <b>쓰는 법</b> — 요일과 시간, 과목을 등록하고 위에서 칠할 과목을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. PC에서는 드래그로 여러 칸을 칠할 수 있고, 모바일에서는 짧게 탭해 입력하고 좌우 스와이프로 표를 이동합니다.<br>
+  <b>쓰는 법</b> — 요일과 시간, 과목을 등록하고 위에서 칠할 과목을 고른 뒤 칸을 누르면 배정됩니다. 같은 칸을 다시 누르면 지워집니다. 드래그하면 여러 칸을 한 번에 칠할 수 있습니다.<br>
   <b>백업</b> — 작업 내용은 이 브라우저에만 저장됩니다. 다른 기기에서 이어서 작업하거나 기록을 오래 남기려면 백업 파일을 받아두세요.
   <div class="flinks">
     <a href="../index.html">baro-tools</a>
@@ -552,44 +548,26 @@ $('title').addEventListener('input',e=>{
 });
 
 const doc=$('doc');
-let touchPaint=null;
-function startPaintMode(td){
-  const k=key(td.dataset.d,td.dataset.r);
-  mode=(S.cells[k]===brush)?'del':'set';
-}
-doc.addEventListener('pointerdown',e=>{
+doc.addEventListener('mousedown',e=>{
   const td=e.target.closest('td.cell');if(!td)return;
   if(!brush){toast('위에서 칠할 과목을 먼저 고르세요');return}
-  if(e.pointerType==='touch'){
-    touchPaint={td,x:e.clientX,y:e.clientY,moved:false};
-    return;
-  }
-  if(e.button!==0)return;
-  e.preventDefault();startPaintMode(td);
+  e.preventDefault();
+  const k=key(td.dataset.d,td.dataset.r);
+  mode=(S.cells[k]===brush)?'del':'set';
   paint=true;paintCell(td);
 });
-doc.addEventListener('pointermove',e=>{
-  if(e.pointerType==='touch'){
-    if(touchPaint&&Math.hypot(e.clientX-touchPaint.x,e.clientY-touchPaint.y)>10)touchPaint.moved=true;
-    return;
-  }
+doc.addEventListener('mouseover',e=>{
   if(!paint)return;
-  if((e.buttons&1)!==1){paint=false;mode=null;return}
-  const hit=document.elementFromPoint(e.clientX,e.clientY);
-  const td=hit&&hit.closest('td.cell');if(td)paintCell(td);
+  const td=e.target.closest('td.cell');if(td)paintCell(td);
 });
-doc.addEventListener('pointerup',e=>{
-  if(e.pointerType==='touch'&&touchPaint){
-    const start=touchPaint;touchPaint=null;
-    if(!start.moved){
-      startPaintMode(start.td);paintCell(start.td);
-      e.preventDefault();
-    }
-  }
-  paint=false;mode=null;
-});
-doc.addEventListener('pointercancel',()=>{touchPaint=null;paint=false;mode=null});
-document.addEventListener('pointerup',()=>{paint=false;mode=null});
+document.addEventListener('mouseup',()=>{paint=false;mode=null});
+doc.addEventListener('touchstart',e=>{
+  const td=e.target.closest('td.cell');if(!td)return;
+  if(!brush){toast('위에서 칠할 과목을 먼저 고르세요');return}
+  const k=key(td.dataset.d,td.dataset.r);
+  mode=(S.cells[k]===brush)?'del':'set';
+  paintCell(td);
+},{passive:true});
 
 /* ---------- 파일 ---------- */
 function safeName(s){return String(s).replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ').trim()}
@@ -639,26 +617,18 @@ $('loadfile').addEventListener('change',e=>{
 });
 
 $('print').addEventListener('click',()=>window.print());
-function mobileTimetableWidth(){
-  return Math.max(680,120+S.days.length*110);
-}
 $('png').addEventListener('click',async()=>{
   if(!S.days.length||!S.rows.length||!S.subjects.length){toast('먼저 요일, 시간, 과목을 등록하세요');return}
   toast('이미지를 만드는 중입니다');
-  const mobile=matchMedia('(max-width:940px)').matches;
-  const oldWidth=doc.style.width;
-  if(mobile)doc.style.width=mobileTimetableWidth()+'px';
   doc.classList.add('capture');
   try{
-    const options={backgroundColor:'#ffffff',scale:2};
-    if(mobile){options.width=doc.scrollWidth;options.windowWidth=doc.scrollWidth}
-    const c=await html2canvas(doc,options);
+    const c=await html2canvas(doc,{backgroundColor:'#ffffff',scale:2});
     c.toBlob(b=>{
       if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
       download(b,autoName('png'));toast('이미지를 저장했습니다');
     },'image/png');
   }catch(err){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요')}
-  finally{doc.classList.remove('capture');doc.style.width=oldWidth}
+  finally{doc.classList.remove('capture')}
 });
 $('reset').addEventListener('click',()=>{
   if(!confirm('요일, 시간, 과목, 배정 내용이 모두 지워집니다. 계속할까요?'))return;
