@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>근로계약서 만들기 — 표준 서식으로 작성하고 인쇄</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#141519">
+<meta name="description" content="가입 없이 근로계약서를 작성하고 인쇄하거나 이미지로 저장합니다. 고용노동부 표준 서식 구성을 따르며, 입력한 내용은 서버로 전송되지 않습니다.">
+<link rel="canonical" href="https://baro-tools.com/contract/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --ink:#141519;--ink-2:#4a4d57;--ink-3:#8b8f9c;
+  --line:#dcdee6;--line-2:#eceef3;--paper:#f7f7f4;--card:#fff;
+  --mark:#e8503a;--mark-soft:#fdeeeb;
+  --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
+  --topbar:69px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Gothic A1',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  touch-action:manipulation;
+}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+
+.top{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:50}
+.top-in{max-width:1240px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.home{
+  display:grid;place-items:center;flex-shrink:0;width:32px;height:32px;border-radius:8px;
+  margin-right:-6px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink-2);font-size:16px;line-height:1;text-decoration:none;
+  transition:border-color .14s,background .14s,color .14s;
+}
+.home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
+.brand b{font-weight:900;font-size:19px;letter-spacing:-.03em}
+.brand span{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--ink-3);letter-spacing:.1em;text-transform:uppercase}
+.btn{
+  padding:9px 16px;border-radius:8px;font-weight:700;font-size:13.5px;
+  border:1px solid var(--line);background:var(--card);
+  transition:border-color .14s,background .14s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--ink-3)}
+.btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.btn-solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-solid:hover{background:#000;border-color:#000}
+.btn-ghost{border-color:transparent;color:var(--ink-2)}
+.btn-ghost:hover{background:var(--line-2);border-color:transparent}
+.btn .sm{display:none}
+
+.wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+.wrap>*{min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+.side{max-height:calc(100vh - var(--topbar) - 48px);overflow-y:auto;position:sticky;top:calc(var(--topbar) + 24px)}
+
+.sec{padding:18px;border-bottom:1px solid var(--line-2)}
+.sec:last-child{border-bottom:none}
+.sec-h{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.hint{font-size:12px;color:var(--ink-3);line-height:1.55;margin-top:9px}
+.hint b{color:var(--ink-2);font-weight:700}
+
+.field{margin-bottom:11px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:5px}
+.field label .opt{color:var(--ink-3);font-weight:400}
+.inp{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:7px;
+  background:var(--card);font-size:14px;transition:border-color .14s;
+}
+.inp:focus{outline:none;border-color:var(--ink)}
+textarea.inp{resize:vertical;min-height:64px;line-height:1.6}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+
+.pill{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.pl{
+  padding:7px 13px;border-radius:7px;border:1px solid var(--line);background:var(--card);
+  font-size:12.5px;font-weight:700;color:var(--ink-3);transition:all .13s;
+}
+.pl.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pl:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+
+.dow{display:flex;gap:5px;flex-wrap:wrap}
+.dw{
+  width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--card);
+  font-size:13px;font-weight:800;color:var(--ink-3);transition:all .12s;
+}
+.dw:hover{border-color:var(--ink);color:var(--ink)}
+.dw.sat{color:#2f6fd0} .dw.sun{color:var(--mark)}
+.dw.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.dw:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
+.ck{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-2);user-select:none}
+.ck input{width:15px;height:15px;accent-color:var(--ink);cursor:pointer;margin:0;flex-shrink:0}
+.ins{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.load{
+  width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;
+  font-size:12.5px;font-weight:700;color:var(--ink-2);transition:all .13s;
+}
+.load:hover{border-color:var(--ink);color:var(--ink)}
+.load:disabled{opacity:.5;cursor:default}
+.load:disabled:hover{border-color:var(--line);color:var(--ink-2)}
+
+/* ---------- 계약서 ---------- */
+.stage{padding:28px;display:flex;justify-content:center}
+.doc{
+  width:100%;max-width:660px;background:#fff;color:#111;
+  border:1px solid #222;padding:38px 36px;font-size:12.5px;line-height:1.7;
+}
+.doc h1{text-align:center;font-size:20px;font-weight:900;letter-spacing:.18em;margin-bottom:6px}
+.doc .sub{text-align:center;font-size:11.5px;color:#666;margin-bottom:20px}
+.doc .intro{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #ccc}
+.cl{display:flex;gap:8px;margin-bottom:9px}
+.cl .no{flex-shrink:0;font-weight:800;min-width:74px}
+.cl .bd{flex:1;min-width:0}
+.cl .bd .sub2{display:block;padding-left:10px;color:#333}
+.doc .empty{color:#bbb}
+.sign{
+  margin-top:26px;padding-top:18px;border-top:1px solid #ccc;
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+}
+.sign .dt{grid-column:1/-1;text-align:center;font-weight:700;margin-bottom:8px;font-size:13px}
+.sign .bx b{display:block;font-size:12.5px;font-weight:800;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid #ddd}
+.sign .bx div{font-size:11.5px;color:#333;margin-bottom:3px}
+.sign .bx .nm{color:#111;font-weight:700}
+.doc .note{margin-top:18px;padding-top:12px;border-top:1px solid #ddd;font-size:10.5px;color:#888;line-height:1.6}
+
+.foot{max-width:1240px;margin:0 auto;padding:28px 24px 44px;font-size:12px;color:var(--ink-3);line-height:1.7}
+.foot b{color:var(--ink-2);font-weight:700}
+.flinks{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.flinks a{color:var(--ink-2);font-weight:700;margin-right:16px;text-decoration:none}
+.flinks a:hover{text-decoration:underline}
+
+.help-content{max-width:1240px;margin:10px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.help-card{
+  padding:20px;background:var(--card);border:1px solid var(--line);border-radius:11px;
+  display:flex;flex-direction:column;
+}
+.help-card h3{font-size:14px;margin-bottom:7px}
+.help-card p{font-size:13px;color:var(--ink-2);line-height:1.7}
+.help-card a{
+  display:inline-block;margin-top:auto;padding-top:12px;color:var(--mark);
+  font-size:12.5px;font-weight:800;text-decoration:none;align-self:flex-start;
+}
+.help-card a:hover{text-decoration:underline}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(70px);
+  background:var(--ink);color:#fff;padding:11px 20px;border-radius:9px;
+  font-size:13.5px;font-weight:700;opacity:0;transition:all .22s;z-index:100;pointer-events:none;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:940px){
+  .wrap{grid-template-columns:1fr;padding:12px;gap:12px}
+  .side{position:static;max-height:none;overflow:visible}
+  .top-in{padding:10px 12px;gap:6px}
+  .brand b{font-size:16px}
+  .brand span{display:none}
+  .btn{padding:8px 11px;font-size:12.5px}
+  .btn .lg{display:none}
+  .btn .sm{display:inline}
+  .home{width:30px;height:30px;margin-right:-2px}
+  .stage{padding:12px}
+  .doc{padding:24px 18px;font-size:12px}
+  .inp{font-size:16px}
+  .help-content{grid-template-columns:1fr;padding:0 16px}
+  .sign{grid-template-columns:1fr;gap:16px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  .top,.side,.foot,.help-content{display:none!important}
+  .wrap{grid-template-columns:1fr;padding:0;max-width:none}
+  .panel{border:none;box-shadow:none}
+  .stage{padding:0}
+  .doc{border:none;max-width:none;padding:0}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="home" href="../index.html" aria-label="도구 목록으로 돌아가기"><span aria-hidden="true">←</span></a>
+    <a class="brand" href="../index.html"><b>근로계약서 만들기</b><span>baro-tools</span></a>
+    <button class="btn btn-ghost" id="reset"><span class="lg">전체 지우기</span><span class="sm">지우기</span></button>
+    <button class="btn" id="load"><span class="lg">백업 불러오기</span><span class="sm">불러오기</span></button>
+    <button class="btn" id="backup"><span class="lg">백업 파일 저장</span><span class="sm">백업</span></button>
+    <button class="btn" id="print">인쇄</button>
+    <button class="btn btn-solid" id="png"><span class="lg">이미지로 저장</span><span class="sm">이미지</span></button>
+    <input type="file" id="loadfile" accept=".json,application/json" hidden>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <aside class="panel side">
+    <div class="sec">
+      <div class="sec-h">계약 형태</div>
+      <div class="pill" id="kind">
+        <button class="pl on" data-k="open">기간의 정함 없음</button>
+        <button class="pl" data-k="fixed">기간제</button>
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>근로개시일</label>
+          <input class="inp" id="from" inputmode="numeric" placeholder="20260801" maxlength="10">
+        </div>
+        <div class="field" id="toWrap" hidden>
+          <label>근로종료일</label>
+          <input class="inp" id="to" inputmode="numeric" placeholder="20270731" maxlength="10">
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">사업주</div>
+      <div class="field"><label>회사명</label><input class="inp" id="coName" placeholder="(주)바로상사" maxlength="40"></div>
+      <div class="row-2">
+        <div class="field"><label>대표자</label><input class="inp" id="coCeo" placeholder="김대표" maxlength="20"></div>
+        <div class="field"><label>연락처</label><input class="inp" id="coTel" placeholder="02-000-0000" maxlength="20"></div>
+      </div>
+      <div class="field"><label>주소</label><input class="inp" id="coAddr" placeholder="서울시 ○○구 ○○로 00" maxlength="60"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><span>근로자</span><span></span></div>
+      <button class="load" id="fromSchedule">근무표에서 직원 불러오기</button>
+      <div class="field" style="margin-top:11px"><label>성명</label><input class="inp" id="emName" placeholder="홍길동" maxlength="20"></div>
+      <div class="row-2">
+        <div class="field"><label>연락처 <span class="opt">(선택)</span></label><input class="inp" id="emTel" placeholder="010-0000-0000" maxlength="20"></div>
+        <div class="field"><label>주소 <span class="opt">(선택)</span></label><input class="inp" id="emAddr" placeholder="서울시 ○○구" maxlength="60"></div>
+      </div>
+      <p class="hint">계약서에 필요한 정보만 적으세요. 주민등록번호는 근로계약서 작성에 반드시 필요한 항목이 아닙니다.</p>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">근무 조건</div>
+      <div class="field"><label>근무 장소</label><input class="inp" id="place" placeholder="본사 사무실" maxlength="60"></div>
+      <div class="field"><label>업무의 내용</label><input class="inp" id="job" placeholder="매장 관리 및 고객 응대" maxlength="80"></div>
+      <div class="row-2">
+        <div class="field"><label>근무 시작</label><input class="inp" id="wStart" placeholder="09:00" maxlength="5"></div>
+        <div class="field"><label>근무 종료</label><input class="inp" id="wEnd" placeholder="18:00" maxlength="5"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>휴게 시작</label><input class="inp" id="bStart" placeholder="12:00" maxlength="5"></div>
+        <div class="field"><label>휴게 종료</label><input class="inp" id="bEnd" placeholder="13:00" maxlength="5"></div>
+      </div>
+      <div class="field">
+        <label>휴일 <span class="opt">(여러 개 선택 가능)</span></label>
+        <div class="dow" id="offDays"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>주 근무일수</label><input class="inp" id="days" inputmode="numeric" placeholder="5" maxlength="1"></div>
+        <div class="field"><label>주휴일 <span class="opt">(유급)</span></label>
+          <select class="inp" id="rest">
+            <option value="">지정 안 함</option>
+            <option value="일">일요일</option><option value="월">월요일</option><option value="화">화요일</option>
+            <option value="수">수요일</option><option value="목">목요일</option><option value="금">금요일</option>
+            <option value="토">토요일</option>
+            <option value="교대">근무표에 따름 (교대제)</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">쉬는 날이 여러 개면 <b>휴일</b>에 모두 고르고, 그중 유급으로 보장하는 하루를 <b>주휴일</b>로 지정하세요. 교대제라 요일이 고정되지 않으면 주휴일을 <b>근무표에 따름</b>으로 두면 됩니다.</p>
+      <p class="hint">근로시간이 4시간이면 30분 이상, 8시간이면 1시간 이상의 휴게시간을 근무시간 도중에 주어야 합니다.</p>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">임금</div>
+      <div class="pill" id="payKind">
+        <button class="pl on" data-p="월급">월급</button>
+        <button class="pl" data-p="일급">일급</button>
+        <button class="pl" data-p="시급">시급</button>
+      </div>
+      <div class="field"><label>금액</label><input class="inp" id="payAmt" inputmode="numeric" placeholder="0"></div>
+      <div class="row-2">
+        <div class="field"><label>상여금 <span class="opt">(선택)</span></label><input class="inp" id="bonus" inputmode="numeric" placeholder="없으면 비움"></div>
+        <div class="field"><label>기타 수당 <span class="opt">(선택)</span></label><input class="inp" id="extra" placeholder="식대 200,000" maxlength="40"></div>
+      </div>
+      <div class="row-2">
+        <div class="field"><label>지급일</label><input class="inp" id="payDay" placeholder="매월 25일" maxlength="20"></div>
+        <div class="field"><label>지급 방법</label>
+          <select class="inp" id="payWay">
+            <option>근로자 명의 예금통장에 입금</option>
+            <option>근로자에게 직접 지급</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">사회보험</div>
+      <div class="ins">
+        <label class="ck"><input type="checkbox" id="i1" checked><span>고용보험</span></label>
+        <label class="ck"><input type="checkbox" id="i2" checked><span>산재보험</span></label>
+        <label class="ck"><input type="checkbox" id="i3" checked><span>국민연금</span></label>
+        <label class="ck"><input type="checkbox" id="i4" checked><span>건강보험</span></label>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">기타 · 계약일</div>
+      <div class="field">
+        <label>특약 사항 <span class="opt">(선택)</span></label>
+        <textarea class="inp" id="etc" placeholder="예: 수습기간은 입사일로부터 3개월로 한다."></textarea>
+      </div>
+      <div class="field">
+        <label>계약 체결일</label>
+        <input class="inp" id="signDate" inputmode="numeric" placeholder="20260728" maxlength="10">
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h">저장</div>
+      <p class="hint" style="margin-top:0">작업 내용은 이 브라우저에 자동으로 남습니다. 서버로는 아무것도 전송되지 않습니다.</p>
+    </div>
+  </aside>
+
+  <main class="panel">
+    <div class="stage"><div class="doc" id="doc"></div></div>
+  </main>
+</div>
+
+<section class="help-content">
+  <div class="help-card">
+    <h3>1. 서면 교부는 의무입니다</h3>
+    <p>근로기준법 제17조에 따라 임금, 소정근로시간, 휴일, 연차유급휴가가 명시된 서면을 근로자에게 교부해야 합니다. 두 부를 출력해 각각 보관하세요.</p>
+    <a href="../guides/contract/index.html">근로계약서 필수 항목 →</a>
+  </div>
+  <div class="help-card">
+    <h3>2. 근무표와 함께 쓰기</h3>
+    <p>근무표에 등록해 둔 직원과 입사일을 그대로 불러올 수 있습니다. 이름과 날짜를 다시 입력할 필요가 없습니다.</p>
+    <a href="../guides/schedule/index.html">근무표 작성 순서 →</a>
+  </div>
+  <div class="help-card">
+    <h3>3. 보관과 공유</h3>
+    <p>인쇄본은 서명용, 백업 파일은 수정용입니다. 개인정보가 담기므로 접근 권한이 관리되는 위치에 보관하세요.</p>
+    <a href="../guides/backup/index.html">저장과 백업 안내 →</a>
+  </div>
+</section>
+
+<footer class="foot">
+  <b>쓰는 법</b> — 왼쪽에 내용을 입력하면 오른쪽 계약서가 실시간으로 완성됩니다. 완성되면 인쇄해 사업주와 근로자가 각각 서명하고 한 부씩 보관하세요.<br>
+  <b>참고</b> — 이 도구는 고용노동부 표준근로계약서의 구성을 따른 작성 보조 도구입니다. 표준근로계약서는 법정 서식이 아닌 참고용 서식이며, 실제 계약 내용의 적법성은 사업장 상황에 따라 달라질 수 있으므로 필요하면 공인노무사 등 전문가의 검토를 받으세요.
+  <div class="flinks">
+    <a href="../index.html">baro-tools</a>
+    <a href="../guides/index.html">활용 가이드</a>
+    <a href="../terms.html">이용약관</a>
+    <a href="../privacy.html">개인정보처리방침</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='contract.v1';
+const SCHEDULE_KEY='shiftsheet.v1';
+
+let S={
+  kind:'open', from:'', to:'',
+  coName:'', coCeo:'', coTel:'', coAddr:'',
+  emName:'', emTel:'', emAddr:'',
+  place:'', job:'', wStart:'', wEnd:'', bStart:'', bEnd:'', days:'', rest:'일', off:[],
+  payKind:'월급', payAmt:'', bonus:'', extra:'', payDay:'', payWay:'근로자 명의 예금통장에 입금',
+  ins:{i1:true,i2:true,i3:true,i4:true},
+  etc:'', signDate:''
+};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const won=n=>Number(n||0).toLocaleString('ko-KR');
+const num=v=>{const n=Math.round(Number(String(v).replace(/[^0-9.-]/g,''))||0);return isFinite(n)?n:0};
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.ins)S=Object.assign(S,o)}}catch(e){}
+}
+function toast(m){
+  const t=$('toast');t.textContent=m;t.classList.add('on');
+  clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2200);
+}
+
+/* ---------- 입력 보조 ---------- */
+function fmtDate(el){
+  const atEnd=el.selectionStart===el.value.length;
+  const d=el.value.replace(/[^\d]/g,'').slice(0,8);
+  let out=d;
+  if(d.length>6)out=d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6);
+  else if(d.length>4)out=d.slice(0,4)+'-'+d.slice(4);
+  el.value=out;
+  if(atEnd){try{el.setSelectionRange(out.length,out.length)}catch(e){}}
+}
+function fmtMoney(el){
+  const start=el.selectionStart;
+  const before=(el.value.slice(0,start).match(/\d/g)||[]).length;
+  const d=el.value.replace(/[^\d]/g,'');
+  if(!d){el.value='';return}
+  const out=Number(d).toLocaleString('ko-KR');
+  el.value=out;
+  let pos=0,seen=0;
+  while(pos<out.length&&seen<before){if(/\d/.test(out[pos]))seen++;pos++}
+  try{el.setSelectionRange(pos,pos)}catch(e){}
+}
+function fmtTime(el){
+  const d=el.value.replace(/[^\d]/g,'').slice(0,4);
+  el.value = d.length>2 ? d.slice(0,2)+':'+d.slice(2) : d;
+}
+/* 2026-08-01 -> 2026년 8월 1일 */
+function korDate(v){
+  const a=String(v||'').split('-');
+  if(a.length<3)return '';
+  return `${+a[0]}년 ${+a[1]}월 ${+a[2]}일`;
+}
+
+/* ---------- 계약서 ---------- */
+function clause(no,title,body){
+  return `<div class="cl"><span class="no">제${no}조</span><span class="bd"><b>【${title}】</b> ${body}</span></div>`;
+}
+function blank(v,ph){
+  return v ? esc(v) : `<span class="empty">${ph}</span>`;
+}
+
+/* 제5조 문장을 만든다. 휴일이 여러 개일 수 있고, 그중 하나가 유급 주휴일이다. */
+function restLine(){
+  const parts=[`매주 ${blank(S.days,'_')}일 근무`];
+  const off=S.off, rest=S.rest;
+
+  if(rest==='교대'){
+    if(off.length)parts.push(`휴일 매주 ${off.join('·')}요일`);
+    parts.push('주휴일은 근무표에 따름');
+  }else if(off.length===1 && off[0]===rest){
+    // 쉬는 날이 하나뿐이고 그날이 주휴일이면 한 번만 적는다
+    parts.push(`주휴일 매주 ${esc(rest)}요일`);
+  }else if(off.length && rest){
+    parts.push(`휴일 매주 ${off.join('·')}요일 (주휴일 : ${esc(rest)}요일)`);
+  }else if(off.length){
+    parts.push(`휴일 매주 ${off.join('·')}요일`);
+  }else if(rest){
+    parts.push(`주휴일 매주 ${esc(rest)}요일`);
+  }else{
+    parts.push('<span class="empty">주휴일 매주 _요일</span>');
+  }
+  return parts.join(', ');
+}
+
+function drawDoc(){
+  const insList=[['i1','고용보험'],['i2','산재보험'],['i3','국민연금'],['i4','건강보험']]
+    .map(([k,n])=>`${S.ins[k]?'☑':'☐'} ${n}`).join('  ');
+
+  const period = S.kind==='fixed'
+    ? `${blank(korDate(S.from),'____년 __월 __일')}부터 ${blank(korDate(S.to),'____년 __월 __일')}까지`
+    : `${blank(korDate(S.from),'____년 __월 __일')}부터 (기간의 정함 없음)`;
+
+  const work = (S.wStart||S.wEnd)
+    ? `${blank(S.wStart,'__:__')}부터 ${blank(S.wEnd,'__:__')}까지`
+    : '<span class="empty">__:__부터 __:__까지</span>';
+  const rest = (S.bStart||S.bEnd)
+    ? ` (휴게시간 : ${blank(S.bStart,'__:__')} ~ ${blank(S.bEnd,'__:__')})`
+    : ' <span class="empty">(휴게시간 : __:__ ~ __:__)</span>';
+
+  const amt = S.payAmt ? won(num(S.payAmt))+'원' : '<span class="empty">________원</span>';
+  const bonus = S.bonus ? `있음 ( ${won(num(S.bonus))}원 )` : '없음';
+  const extra = S.extra ? `있음 ( ${esc(S.extra)} )` : '없음';
+
+  let h='';
+  h+=`<h1>근로계약서</h1>`;
+  h+=`<div class="sub">${S.kind==='fixed'?'기간의 정함이 있는 경우':'기간의 정함이 없는 경우'}</div>`;
+  h+=`<div class="intro">${blank(S.coName,'________')}(이하 “사업주”라 함)과(와) ${blank(S.emName,'________')}(이하 “근로자”라 함)은 다음과 같이 근로계약을 체결한다.</div>`;
+
+  h+=clause(1,'근로계약기간',period);
+  h+=clause(2,'근무장소',blank(S.place,'________'));
+  h+=clause(3,'업무의 내용',blank(S.job,'________'));
+  h+=clause(4,'소정근로시간',work+rest);
+  h+=clause(5,'근무일 / 휴일', restLine());
+  h+=clause(6,'임금',
+      `<span class="sub2">1. ${esc(S.payKind)} : ${amt}</span>`+
+      `<span class="sub2">2. 상여금 : ${bonus}</span>`+
+      `<span class="sub2">3. 기타급여(제수당 등) : ${extra}</span>`+
+      `<span class="sub2">4. 임금지급일 : ${blank(S.payDay,'매월 __일')} (휴일의 경우는 전일 지급)</span>`+
+      `<span class="sub2">5. 지급방법 : ${esc(S.payWay)}</span>`);
+  h+=clause(7,'연차유급휴가','연차유급휴가는 근로기준법에서 정하는 바에 따라 부여함');
+  h+=clause(8,'사회보험 적용여부',insList);
+  h+=clause(9,'근로계약서 교부','사업주는 근로계약을 체결함과 동시에 본 계약서를 사본하여 근로자의 교부요구와 관계없이 근로자에게 교부함 (근로기준법 제17조 이행)');
+  h+=clause(10,'성실한 이행의무','사업주와 근로자는 각자가 근로계약, 취업규칙, 단체협약을 지키고 성실하게 이행하여야 함');
+  h+=clause(11,'기타', S.etc ? esc(S.etc).replace(/\n/g,'<br>')+'<br>이 계약에 정함이 없는 사항은 근로기준법령에 의함'
+                              : '이 계약에 정함이 없는 사항은 근로기준법령에 의함');
+
+  h+=`<div class="sign">
+    <div class="dt">${blank(korDate(S.signDate),'____년 __월 __일')}</div>
+    <div class="bx"><b>사업주</b>
+      <div>주소 : ${blank(S.coAddr,'&nbsp;')}</div>
+      <div>회사명 : ${blank(S.coName,'&nbsp;')}</div>
+      <div class="nm">대표자 : ${blank(S.coCeo,'&nbsp;')} (인)</div>
+      <div>연락처 : ${blank(S.coTel,'&nbsp;')}</div>
+    </div>
+    <div class="bx"><b>근로자</b>
+      <div>주소 : ${blank(S.emAddr,'&nbsp;')}</div>
+      <div>&nbsp;</div>
+      <div class="nm">성명 : ${blank(S.emName,'&nbsp;')} (인)</div>
+      <div>연락처 : ${blank(S.emTel,'&nbsp;')}</div>
+    </div>
+  </div>`;
+
+  h+=`<div class="note">본 서식은 고용노동부 표준근로계약서의 구성을 따른 참고용 문서입니다. 표준근로계약서는 법정 서식이 아니며, 실제 계약 내용은 사업장 상황과 관계 법령에 따라 달라질 수 있습니다.</div>`;
+
+  $('doc').innerHTML=h;
+}
+
+/* ---------- 입력 연결 ---------- */
+const TEXTS=['coName','coCeo','coTel','coAddr','emName','emTel','emAddr','place','job','payDay','extra','etc'];
+TEXTS.forEach(id=>$(id).addEventListener('input',e=>{S[id]=e.target.value;drawDoc();save()}));
+
+['from','to','signDate'].forEach(id=>{
+  $(id).addEventListener('input',e=>{fmtDate(e.target);S[id]=e.target.value;drawDoc();save()});
+});
+['wStart','wEnd','bStart','bEnd'].forEach(id=>{
+  $(id).addEventListener('input',e=>{fmtTime(e.target);S[id]=e.target.value;drawDoc();save()});
+});
+['payAmt','bonus'].forEach(id=>{
+  $(id).addEventListener('input',e=>{fmtMoney(e.target);S[id]=e.target.value;drawDoc();save()});
+});
+$('days').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/[^\d]/g,'').slice(0,1);
+  S.days=e.target.value;drawDoc();save();
+});
+const DOW=['월','화','수','목','금','토','일'];
+function drawOff(){
+  $('offDays').innerHTML=DOW.map(w=>
+    `<button class="dw${S.off.includes(w)?' on':''}${w==='토'?' sat':w==='일'?' sun':''}" data-w="${w}">${w}</button>`
+  ).join('');
+}
+$('offDays').addEventListener('click',e=>{
+  const b=e.target.closest('[data-w]');if(!b)return;
+  const w=b.dataset.w;
+  S.off = S.off.includes(w) ? S.off.filter(x=>x!==w) : [...S.off,w];
+  S.off.sort((a,b)=>DOW.indexOf(a)-DOW.indexOf(b));
+  // 주 근무일수를 비워 뒀으면 자동으로 채워 준다
+  if(!S.days){ const n=7-S.off.length; S.days=String(n); $('days').value=S.days; }
+  drawOff();drawDoc();save();
+});
+$('rest').addEventListener('change',e=>{S.rest=e.target.value;drawDoc();save()});
+$('payWay').addEventListener('change',e=>{S.payWay=e.target.value;drawDoc();save()});
+
+$('kind').addEventListener('click',e=>{
+  const b=e.target.closest('[data-k]');if(!b)return;
+  S.kind=b.dataset.k;
+  [...$('kind').children].forEach(x=>x.classList.toggle('on',x===b));
+  $('toWrap').hidden = S.kind!=='fixed';
+  drawDoc();save();
+});
+$('payKind').addEventListener('click',e=>{
+  const b=e.target.closest('[data-p]');if(!b)return;
+  S.payKind=b.dataset.p;
+  [...$('payKind').children].forEach(x=>x.classList.toggle('on',x===b));
+  drawDoc();save();
+});
+['i1','i2','i3','i4'].forEach(id=>{
+  $(id).addEventListener('change',e=>{S.ins[id]=e.target.checked;drawDoc();save()});
+});
+
+/* ---------- 근무표에서 불러오기 ---------- */
+function readSchedule(){
+  try{
+    const r=localStorage.getItem(SCHEDULE_KEY);
+    if(!r)return null;
+    const o=JSON.parse(r);
+    return (o&&Array.isArray(o.people)&&o.people.length)?o.people:null;
+  }catch(e){return null}
+}
+$('fromSchedule').addEventListener('click',()=>{
+  const people=readSchedule();
+  if(!people){
+    toast('근무표에 등록된 직원이 없습니다. 같은 브라우저에서 근무표를 먼저 작성하세요');
+    return;
+  }
+  const list=people.map((p,i)=>`${i+1}. ${p.name}`).join('\n');
+  const pick=prompt('근무표에 등록된 직원입니다. 불러올 번호를 입력하세요.\n\n'+list,'1');
+  if(pick===null)return;
+  const i=parseInt(pick,10)-1;
+  if(!(i>=0&&i<people.length)){toast('번호를 확인하세요');return}
+  const p=people[i];
+  S.emName=p.name||'';
+  $('emName').value=S.emName;
+  // 입사일이 있으면 근로개시일로 옮긴다 ('YYYY-M-D', 월은 0부터)
+  if(p.from){
+    const a=String(p.from).split('-').map(Number);
+    if(a.length===3){
+      S.from=`${a[0]}-${String(a[1]+1).padStart(2,'0')}-${String(a[2]).padStart(2,'0')}`;
+      $('from').value=S.from;
+    }
+  }
+  drawDoc();save();
+  toast(S.emName+' 님의 정보를 불러왔습니다');
+});
+
+/* ---------- 파일 ---------- */
+function safeName(s){return String(s).replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,' ').trim()}
+function baseName(){
+  const n=safeName(S.emName)||'근로계약서';
+  return S.emName ? `${n} 근로계약서` : '근로계약서';
+}
+function download(blob,name){
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+$('backup').addEventListener('click',async()=>{
+  const data=Object.assign({app:'contract',ver:1,savedAt:new Date().toISOString()},S);
+  const json=JSON.stringify(data,null,2);
+  const name=baseName()+' 백업.json';
+  if(window.showSaveFilePicker){
+    try{
+      const h=await window.showSaveFilePicker({suggestedName:name,
+        types:[{description:'근로계약서 백업 파일',accept:{'application/json':['.json']}}]});
+      const w=await h.createWritable();await w.write(json);await w.close();
+      toast('백업 파일을 저장했습니다');return;
+    }catch(err){if(err&&err.name==='AbortError')return}
+  }
+  download(new Blob([json],{type:'application/json'}),name);
+  toast('백업 파일을 저장했습니다');
+});
+$('load').addEventListener('click',()=>$('loadfile').click());
+$('loadfile').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const o=JSON.parse(r.result);
+      if(!o||o.app!=='contract'){toast('이 파일은 근로계약서 백업 파일이 아닙니다');return}
+      if(!confirm('지금 작업 중인 내용이 백업 파일 내용으로 바뀝니다. 계속할까요?'))return;
+      Object.keys(S).forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+      if(!S.ins)S.ins={i1:true,i2:true,i3:true,i4:true};
+      save();init();toast('백업을 불러왔습니다');
+    }catch(err){toast('파일을 읽지 못했습니다. 백업 파일이 맞는지 확인하세요')}
+  };
+  r.onerror=()=>toast('파일을 읽지 못했습니다');
+  r.readAsText(f);e.target.value='';
+});
+
+$('print').addEventListener('click',()=>window.print());
+$('png').addEventListener('click',async()=>{
+  toast('이미지를 만드는 중입니다');
+  try{
+    const c=await html2canvas($('doc'),{backgroundColor:'#ffffff',scale:2});
+    c.toBlob(b=>{
+      if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
+      download(b,baseName()+'.png');toast('이미지를 저장했습니다');
+    },'image/png');
+  }catch(err){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요')}
+});
+$('reset').addEventListener('click',()=>{
+  if(!confirm('입력한 모든 내용이 지워집니다. 계속할까요?'))return;
+  S={kind:'open',from:'',to:'',coName:'',coCeo:'',coTel:'',coAddr:'',
+     emName:'',emTel:'',emAddr:'',place:'',job:'',wStart:'',wEnd:'',bStart:'',bEnd:'',
+     days:'',rest:'일',off:[],payKind:'월급',payAmt:'',bonus:'',extra:'',payDay:'',
+     payWay:'근로자 명의 예금통장에 입금',ins:{i1:true,i2:true,i3:true,i4:true},etc:'',signDate:''};
+  save();init();toast('처음 상태로 되돌렸습니다');
+});
+
+function init(){
+  TEXTS.forEach(id=>$(id).value=S[id]||'');
+  ['from','to','signDate','wStart','wEnd','bStart','bEnd','payAmt','bonus','days'].forEach(id=>$(id).value=S[id]||'');
+  $('rest').value=S.rest; $('payWay').value=S.payWay;
+  if(!Array.isArray(S.off))S.off=[];
+  drawOff();
+  ['i1','i2','i3','i4'].forEach(id=>$(id).checked=!!S.ins[id]);
+  [...$('kind').children].forEach(x=>x.classList.toggle('on',x.dataset.k===S.kind));
+  [...$('payKind').children].forEach(x=>x.classList.toggle('on',x.dataset.p===S.payKind));
+  $('toWrap').hidden = S.kind!=='fixed';
+  $('fromSchedule').disabled = !readSchedule();
+  drawDoc();
+}
+load();init();
+</script>
+</body>
+</html>
