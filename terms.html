@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>이용약관 — baro-tools</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
@@ -19,7 +25,34 @@
 :root{
   --ink:#141519;--ink-2:#4a4d57;--ink-3:#8b8f9c;
   --line:#dcdee6;--line-2:#eceef3;--paper:#f7f7f4;--card:#fff;--mark:#e8503a;
+
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
 }
+
+/* ---------- 다크 모드 ---------- */
+html[data-theme="dark"]{
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
+  --mark:#ff6f57; --mark-soft:#3b201b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  color-scheme:dark;
+}
+
+/* 테마 전환 버튼 */
+.theme-btn{
+  display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+  transition:border-color .14s,color .14s,background .14s;
+}
+.theme-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.theme-btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.theme-btn .ti{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.theme-btn .moon{fill:currentColor;stroke:none}
+.theme-btn .sun{display:none}
+html[data-theme="dark"] .theme-btn .sun{display:block}
+html[data-theme="dark"] .theme-btn .moon{display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Gothic A1',-apple-system,BlinkMacSystemFont,'Malgun Gothic',sans-serif;
@@ -62,6 +95,7 @@ footer a{color:var(--ink-3);margin-right:14px}
   h1{font-size:23px}
 }
 </style>
+<link rel="stylesheet" href="assets/motion.css">
 </head>
 <body>
 
@@ -69,7 +103,7 @@ footer a{color:var(--ink-3);margin-right:14px}
   <div class="top-in">
     <a class="brand" href="index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a>
     <a class="back" href="index.html">← 도구 목록으로</a>
-  </div>
+  <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
 
 <main>
@@ -188,5 +222,7 @@ footer a{color:var(--ink-3);margin-right:14px}
   </footer>
 </main>
 
+<script src="assets/theme.js" defer></script>
+<script src="assets/motion.js" defer></script>
 </body>
 </html>

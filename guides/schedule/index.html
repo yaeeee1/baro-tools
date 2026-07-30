@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>근무표 작성 순서와 검토 체크리스트 | baro-tools 가이드</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
@@ -16,9 +22,10 @@
 <meta property="og:description" content="자동 배정으로 뼈대를 만들고 예외만 손보는 순서"><meta property="og:url" content="https://baro-tools.com/guides/schedule/">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../assets/content.css">
+<link rel="stylesheet" href="../../assets/motion.css">
 </head>
 <body>
-<header class="top"><div class="top-in"><a class="brand" href="../../index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a><nav class="nav" aria-label="주요 메뉴"><a href="../../index.html#tools">도구</a><a href="../index.html">활용 가이드</a><a href="../../about.html">운영 안내</a></nav></div></header>
+<header class="top"><div class="top-in"><a class="brand" href="../../index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a><nav class="nav" aria-label="주요 메뉴"><a href="../../index.html#tools">도구</a><a href="../index.html">활용 가이드</a><a href="../../about.html">운영 안내</a></nav><button class="theme-btn" id="themeBtn" type="button"></button></div></header>
 <main>
   <section class="hero"><span class="eyebrow">SCHEDULE GUIDE</span><h1>근무표 작성 순서와 검토 체크리스트</h1><p class="lead">좋은 근무표는 예쁘게 채운 표가 아니라, 누가 언제 일하는지 오해 없이 읽히는 표입니다. 반복되는 뼈대는 자동으로 채우고 예외만 손보면 수정 횟수가 크게 줄어듭니다.</p><div class="meta"><span>작성: baro-tools 운영자</span><span>최근 검토: 2026년 7월 28일</span><span>읽는 시간 약 6분</span></div></section>
   <div class="layout">
@@ -141,5 +148,7 @@
   </div>
 </main>
 <footer><div class="flinks"><a href="../index.html">가이드 목록</a><a href="../../schedule/index.html">근무표 도구</a><a href="../../about.html">운영 안내</a><a href="../../terms.html">이용약관</a><a href="../../privacy.html">개인정보처리방침</a></div>© 2026 baro-tools · justbarotools@gmail.com</footer>
+<script src="../../assets/theme.js" defer></script>
+<script src="../../assets/motion.js" defer></script>
 </body>
 </html>

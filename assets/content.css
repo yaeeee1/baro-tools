@@ -3,7 +3,39 @@
   --line:#dcdee6;--line-2:#eceef3;--paper:#f7f7f4;--card:#fff;
   --mark:#e8503a;--mark-soft:#fdeeeb;--good:#1f7a4d;
   --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
+
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
+  --note-line:#f2c8c1; --note-ink:#633229; --tip-bg:#eef7f2; --tip-line:#cbe3d5; --tip-ink:var(--tip-ink);
+  --th-bg:#f1f2f5; --cta-sub:#d5d7de;
 }
+
+/* ---------- 다크 모드 ---------- */
+html[data-theme="dark"]{
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
+  --mark:#ff6f57; --mark-soft:#3b201b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --good:#4ade80;
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  --note-line:#5c2f28; --note-ink:#ffb3a3; --tip-bg:#16251d; --tip-line:#2c5641; --tip-ink:#7fd7a6;
+  --th-bg:#23262f; --cta-sub:#5c6070;
+  color-scheme:dark;
+}
+
+/* 테마 전환 버튼 */
+.theme-btn{
+  display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+  transition:border-color .14s,color .14s,background .14s;
+}
+.theme-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.theme-btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.theme-btn .ti{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.theme-btn .moon{fill:currentColor;stroke:none}
+.theme-btn .sun{display:none}
+html[data-theme="dark"] .theme-btn .sun{display:block}
+html[data-theme="dark"] .theme-btn .moon{display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
@@ -59,14 +91,14 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--mark);outline-offse
 .article p{font-size:14.5px;color:var(--ink-2);margin:0 0 13px}
 .article ul,.article ol{padding-left:22px;margin:10px 0 16px;color:var(--ink-2)}
 .article li{font-size:14px;margin:7px 0;padding-left:2px}
-.article a{color:#245f9b;text-underline-offset:3px}
+.article a{color:var(--link);text-underline-offset:3px}
 .note{
-  background:var(--mark-soft);border:1px solid #f2c8c1;border-radius:10px;
-  padding:15px 17px;margin:18px 0;font-size:13.5px;color:#633229;
+  background:var(--mark-soft);border:1px solid var(--note-line);border-radius:10px;
+  padding:15px 17px;margin:18px 0;font-size:13.5px;color:var(--note-ink);
 }
 .tip{
-  background:#eef7f2;border:1px solid #cbe3d5;border-radius:10px;
-  padding:15px 17px;margin:18px 0;font-size:13.5px;color:#28543e;
+  background:var(--tip-bg);border:1px solid var(--tip-line);border-radius:10px;
+  padding:15px 17px;margin:18px 0;font-size:13.5px;color:var(--tip-ink);
 }
 .checklist{list-style:none!important;padding-left:0!important}
 .checklist li{position:relative;padding-left:27px}
@@ -75,7 +107,7 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--mark);outline-offse
 }
 table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:13px;background:var(--card)}
 th,td{padding:11px 12px;border:1px solid var(--line);text-align:left;vertical-align:top}
-th{background:#f1f2f5;font-weight:800}
+th{background:var(--th-bg);font-weight:800}
 .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
 .card{
   display:block;background:var(--card);border:1px solid var(--line);border-radius:11px;
@@ -86,9 +118,9 @@ th{background:#f1f2f5;font-weight:800}
 .card span{display:block;font-size:12.5px;color:var(--ink-2);line-height:1.6}
 .cta{
   display:flex;align-items:center;justify-content:space-between;gap:18px;
-  background:var(--ink);color:#fff;border-radius:12px;padding:20px;margin-top:26px;
+  background:var(--inv-bg);color:var(--inv-fg);border-radius:12px;padding:20px;margin-top:26px;
 }
-.cta p{color:#d5d7de;margin:4px 0 0;font-size:12.5px}
+.cta p{color:var(--cta-sub);margin:4px 0 0;font-size:12.5px}
 .cta a{
   flex:0 0 auto;background:var(--mark);color:#fff;border-radius:8px;
   padding:10px 14px;text-decoration:none;font-size:13px;font-weight:800;
@@ -111,7 +143,7 @@ footer{
   .hero{padding:40px 18px 22px}
   .hero h1{font-size:28px}
   .layout{display:block;padding:10px 18px 50px}
-  .toc{position:static;margin-bottom:25px;padding:14px;border:1px solid var(--line);border-radius:9px;background:#fff}
+  .toc{position:static;margin-bottom:25px;padding:14px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
   .toc a{display:inline-block;margin-right:12px}
   .cards{grid-template-columns:1fr}
   .cta{align-items:flex-start;flex-direction:column}

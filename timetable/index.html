@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>시간표 만들기 — 학교·학원·과외 시간표를 바로 만들고 인쇄</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
@@ -26,7 +32,41 @@
   --mark:#e8503a;--mark-soft:#fdeeeb;
   --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
   --topbar:69px;--barh:59px;
+
+  --th-bg:#f3f4f7; --rowh-bg:#fafbfc; --wk-bg:#fbfbfd;
+  --hol-bg:#fef7f5; --sat:#2f6fd0;
+  --na-a:#f4f4f6; --na-b:#eceef3;
+
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
 }
+
+/* ---------- 다크 모드 ---------- */
+html[data-theme="dark"]{
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
+  --mark:#ff6f57; --mark-soft:#3b201b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --th-bg:#23262f; --rowh-bg:#1f222a; --wk-bg:#191b21;
+  --hol-bg:#2c1f1d; --sat:#6fa8ff;
+  --na-a:#21242b; --na-b:#191b21;
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  color-scheme:dark;
+}
+
+/* 테마 전환 버튼 */
+.theme-btn{
+  display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+  transition:border-color .14s,color .14s,background .14s;
+}
+.theme-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.theme-btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.theme-btn .ti{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.theme-btn .moon{fill:currentColor;stroke:none}
+.theme-btn .sun{display:none}
+html[data-theme="dark"] .theme-btn .sun{display:block}
+html[data-theme="dark"] .theme-btn .moon{display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -44,7 +84,7 @@ button{cursor:pointer;border:none;background:none}
   border:1px solid var(--line);background:var(--card);
   color:var(--ink-2);font-size:16px;line-height:1;
   transition:border-color .14s,background .14s,color .14s;text-decoration:none;}
-.home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.home:hover{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
 .brand h1{font-weight:900;font-size:19px;line-height:1.2;letter-spacing:-.03em}
@@ -56,8 +96,8 @@ button{cursor:pointer;border:none;background:none}
 }
 .btn:hover{border-color:var(--ink-3)}
 .btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
-.btn-solid{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btn-solid:hover{background:#000;border-color:#000}
+.btn-solid{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--ink)}
+.btn-solid:hover{background:var(--inv-bg-h);border-color:var(--inv-bg-h)}
 .btn-ghost{border-color:transparent;color:var(--ink-2)}
 .btn-ghost:hover{background:var(--line-2);border-color:transparent}
 
@@ -116,7 +156,7 @@ button{cursor:pointer;border:none;background:none}
   padding:7px 12px;border-radius:7px;border:1px solid var(--line);
   font-size:12.5px;font-weight:700;color:var(--ink-3);transition:all .14s;
 }
-.day.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.day.on{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 
 .bar{
   padding:14px 18px;border-bottom:1px solid var(--line-2);
@@ -129,7 +169,7 @@ button{cursor:pointer;border:none;background:none}
   border:1px solid var(--line);font-size:13px;font-weight:700;transition:border-color .14s;
 }
 .bsel:hover{border-color:var(--ink-3)}
-.bsel.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.bsel.on{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .bsel .dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
 .bsel.on .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.5)}
 
@@ -139,7 +179,7 @@ button{cursor:pointer;border:none;background:none}
   max-height:calc(100vh - var(--topbar) - var(--barh) - 130px);
   border:1px solid var(--line);border-radius:8px;
 }
-.doc{background:#fff}
+.doc{background:var(--card)}
 .doc-h{margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
 .doc-h h2{font-size:21px;font-weight:900;letter-spacing:-.03em}
 .doc-h p{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);margin-top:3px}
@@ -148,13 +188,13 @@ table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
 th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center;font-size:12px}
 th:first-child,td:first-child{border-left:1px solid var(--line)}
 thead th{
-  background:#f3f4f7;padding:9px 3px;font-weight:700;font-size:12.5px;color:var(--ink-2);
+  background:var(--th-bg);padding:9px 3px;font-weight:700;font-size:12.5px;color:var(--ink-2);
   border-top:1px solid var(--line);position:sticky;top:0;z-index:20;
 }
-thead th.sat{color:#2f6fd0}
+thead th.sat{color:var(--sat)}
 thead th.sun{color:var(--mark)}
 tbody th{
-  background:#fafbfc;padding:8px 6px;font-weight:700;font-size:12px;
+  background:var(--rowh-bg);padding:8px 6px;font-weight:700;font-size:12px;
   color:var(--ink-2);line-height:1.3;
 }
 .tcol{width:76px}
@@ -190,7 +230,7 @@ td.cell:hover{background:var(--line-2)}
 
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(70px);
-  background:var(--ink);color:#fff;padding:11px 20px;border-radius:9px;
+  background:var(--inv-bg);color:var(--inv-fg);padding:11px 20px;border-radius:9px;
   font-size:13.5px;font-weight:700;opacity:0;transition:all .22s;z-index:100;pointer-events:none;
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -221,6 +261,7 @@ td.cell:hover{background:var(--line-2)}
 .doc.capture .scroller{overflow:visible;max-height:none;border:none}
 .doc.capture thead th{position:static!important}
 </style>
+<link rel="stylesheet" href="../assets/motion.css">
 </head>
 <body>
 
@@ -234,7 +275,7 @@ td.cell:hover{background:var(--line-2)}
     <button class="btn" id="print">인쇄</button>
     <button class="btn btn-solid" id="png">이미지로 저장</button>
     <input type="file" id="loadfile" accept=".json,application/json" hidden>
-  </div>
+  <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
 
 <div class="wrap">
@@ -617,12 +658,22 @@ $('loadfile').addEventListener('change',e=>{
 });
 
 $('print').addEventListener('click',()=>window.print());
+/* 인쇄물과 이미지는 흰 종이 기준이므로, 내보내는 동안만 라이트로 바꾼다 */
+function withLightTheme(fn){
+  const r=document.documentElement;
+  const prev=r.getAttribute('data-theme');
+  r.setAttribute('data-theme','light');
+  return Promise.resolve().then(fn).finally(()=>{
+    if(prev)r.setAttribute('data-theme',prev);
+  });
+}
+
 $('png').addEventListener('click',async()=>{
   if(!S.days.length||!S.rows.length||!S.subjects.length){toast('먼저 요일, 시간, 과목을 등록하세요');return}
   toast('이미지를 만드는 중입니다');
   doc.classList.add('capture');
   try{
-    const c=await html2canvas(doc,{backgroundColor:'#ffffff',scale:2});
+    const c=await withLightTheme(()=>html2canvas(doc,{backgroundColor:'#ffffff',scale:2}));
     c.toBlob(b=>{
       if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
       download(b,autoName('png'));toast('이미지를 저장했습니다');
@@ -656,5 +707,7 @@ function init(){
 load();init();
 window.addEventListener('load',syncTopbar);
 </script>
+<script src="../assets/theme.js" defer></script>
+<script src="../assets/motion.js" defer></script>
 </body>
 </html>

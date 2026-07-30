@@ -1,0 +1,143 @@
+/* ==========================================================================
+   모션 시스템 — 사이트 전역 공통 애니메이션 레이어.
+   기존 페이지의 transition 선언은 건드리지 않고, animation 속성과
+   새 선택자(.theme-btn .ti, [data-reveal] 등)로만 얹는다.
+   #slip · #doc 는 html2canvas로 그대로 캡처되는 결과물이므로
+   이 레이어의 모든 효과에서 항상 제외한다.
+   ========================================================================== */
+
+:root{
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.42,.64,1);
+  --dur-1:110ms;
+  --dur-2:180ms;
+  --dur-3:280ms;
+  --dur-4:420ms;
+}
+
+/* -------------------- 스크롤/로드 등장 -------------------- */
+[data-reveal]{
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity var(--dur-4) var(--ease-out),transform var(--dur-4) var(--ease-out);
+  transition-delay:calc(var(--i,0) * 55ms);
+}
+[data-reveal].is-in{opacity:1;transform:none}
+
+/* -------------------- 다크/라이트 아이콘 전환 -------------------- */
+.theme-btn{position:relative}
+.theme-btn .ti{
+  display:block!important;
+  position:absolute;inset:0;margin:auto;
+  transition:opacity var(--dur-3) var(--ease-out),transform var(--dur-3) var(--ease-spring);
+}
+.theme-btn .moon{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-btn .sun{opacity:0;transform:rotate(-65deg) scale(.4)}
+html[data-theme="dark"] .theme-btn .moon{opacity:0;transform:rotate(65deg) scale(.4)}
+html[data-theme="dark"] .theme-btn .sun{opacity:1;transform:rotate(0deg) scale(1)}
+.theme-btn:active{animation:btnPress var(--dur-1) var(--ease-out)}
+
+/* -------------------- 버튼 눌림 피드백 (animation, transition 비클로버) -------------------- */
+@keyframes btnPress{50%{transform:scale(.95)}}
+.btn:active,.tb-btn:active,.tb-wide:active,.tb-case:active,.tx:active,
+.home:active,.addline:active,.tag:active,.x:active,.pk-nav:active,
+.pk-clear:active,.guide-card:active,.card:not(.soon):active{
+  animation:btnPress var(--dur-1) var(--ease-out);
+}
+
+/* -------------------- 카드 호버 (superset — border-color/transform/box-shadow 모두 포함) -------------------- */
+.card:not(.soon),.guide-card,.help-card{
+  transition:border-color var(--dur-3) var(--ease-out),
+             transform var(--dur-3) var(--ease-out),
+             box-shadow var(--dur-3) var(--ease-out);
+}
+.card:not(.soon):hover,.guide-card:hover,.help-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 28px rgba(20,21,25,.10);
+}
+html[data-theme="dark"] .card:not(.soon):hover,
+html[data-theme="dark"] .guide-card:hover,
+html[data-theme="dark"] .help-card:hover{
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+}
+
+.tag{transition:transform var(--dur-2) var(--ease-out),border-color var(--dur-2) var(--ease-out)}
+.tag:hover{transform:translateY(-1px);border-color:var(--ink-3)}
+.more{display:inline-block;transition:transform var(--dur-2) var(--ease-out)}
+.more:hover{transform:translateX(3px)}
+.toc a{transition:color var(--dur-2) var(--ease-out),padding-left var(--dur-2) var(--ease-out)}
+.toc a:hover{padding-left:4px}
+
+/* -------------------- 상단바 스크롤 그림자 -------------------- */
+.top{transition:box-shadow var(--dur-3) var(--ease-out)}
+.top.is-scrolled{box-shadow:0 6px 20px rgba(20,21,25,.06)}
+html[data-theme="dark"] .top.is-scrolled{box-shadow:0 6px 20px rgba(0,0,0,.3)}
+
+/* -------------------- hidden 토글 팝업/패널 등장 (JS 변경 없이 재생) -------------------- */
+@keyframes popIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.pk:not([hidden]){animation:fadeIn var(--dur-3) var(--ease-out)}
+.pk-box{animation:popIn var(--dur-3) var(--ease-out)}
+.dowbox:not([hidden]),#toWrap:not([hidden]){animation:popIn var(--dur-3) var(--ease-out)}
+
+/* -------------------- 사이드 패널 진입 (도구 페이지 초기 로드) -------------------- */
+@keyframes secIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes mainIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.side .sec{animation:secIn var(--dur-4) var(--ease-out) both}
+.side .sec:nth-of-type(1){animation-delay:0ms}
+.side .sec:nth-of-type(2){animation-delay:40ms}
+.side .sec:nth-of-type(3){animation-delay:80ms}
+.side .sec:nth-of-type(4){animation-delay:120ms}
+.side .sec:nth-of-type(5){animation-delay:160ms}
+.side .sec:nth-of-type(6){animation-delay:200ms}
+.side .sec:nth-of-type(n+7){animation-delay:220ms}
+.panel.main{animation:mainIn var(--dur-4) var(--ease-out) both}
+
+/* -------------------- 사이드바 동적 목록 마운트 (구조 변경 시에만 다시 그려지는 컨테이너) -------------------- */
+@keyframes chipIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+#tlist>*,#plist>*,#rlist>*,#slist>*,#gives>*,#takes>*,#offDays>*{
+  animation:chipIn var(--dur-3) var(--ease-out);
+}
+#pal>*,#brushes>*{animation:chipIn var(--dur-4) var(--ease-out) both}
+#pal>*:nth-child(1),#brushes>*:nth-child(1){animation-delay:0ms}
+#pal>*:nth-child(2),#brushes>*:nth-child(2){animation-delay:16ms}
+#pal>*:nth-child(3),#brushes>*:nth-child(3){animation-delay:32ms}
+#pal>*:nth-child(4),#brushes>*:nth-child(4){animation-delay:48ms}
+#pal>*:nth-child(5),#brushes>*:nth-child(5){animation-delay:64ms}
+#pal>*:nth-child(6),#brushes>*:nth-child(6){animation-delay:80ms}
+#pal>*:nth-child(7),#brushes>*:nth-child(7){animation-delay:96ms}
+#pal>*:nth-child(8),#brushes>*:nth-child(8){animation-delay:112ms}
+#pal>*:nth-child(n+9),#brushes>*:nth-child(n+9){animation-delay:128ms}
+
+/* -------------------- 히어로 태그 순차 등장 (index.html) -------------------- */
+.tags .tag{animation:chipIn var(--dur-3) var(--ease-out) both}
+.tags .tag:nth-child(1){animation-delay:120ms}
+.tags .tag:nth-child(2){animation-delay:160ms}
+.tags .tag:nth-child(3){animation-delay:200ms}
+.tags .tag:nth-child(4){animation-delay:240ms}
+.tags .tag:nth-child(5){animation-delay:280ms}
+
+/* ==========================================================================
+   결과물 캡처 영역 — html2canvas가 그대로 스냅샷하는 부분이므로
+   이 레이어가 새로 추가하는 keyframe 애니메이션만 확실히 차단한다.
+   (td.cell 같이 원래부터 있던 hover transition은 그대로 둔다)
+   ========================================================================== */
+#slip,#doc,#slip *,#doc *{
+  animation:none!important;
+}
+
+/* -------------------- 접근성: 모션 축소 -------------------- */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+  [data-reveal]{opacity:1!important;transform:none!important}
+}
+
+/* -------------------- 인쇄: 모션 완전 배제 -------------------- */
+@media print{
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}

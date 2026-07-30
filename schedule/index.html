@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>근무표 만들기 — 5분이면 이번 달 근무표가 나옵니다</title>
 <meta name="description" content="설치도 로그인도 없이 근무표를 만들고 이미지나 PDF로 내보냅니다. 교대근무, 시프트, 격일제 모두 가능합니다.">
@@ -33,7 +39,41 @@
   --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
   --topbar:69px;
   --barh:59px;
+
+  --th-bg:#f3f4f7; --rowh-bg:#fafbfc; --wk-bg:#fbfbfd;
+  --hol-bg:#fef7f5; --sat:#2f6fd0;
+  --na-a:#f4f4f6; --na-b:#eceef3;
+
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
 }
+
+/* ---------- 다크 모드 ---------- */
+html[data-theme="dark"]{
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
+  --mark:#ff6f57; --mark-soft:#3b201b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --th-bg:#23262f; --rowh-bg:#1f222a; --wk-bg:#191b21;
+  --hol-bg:#2c1f1d; --sat:#6fa8ff;
+  --na-a:#21242b; --na-b:#191b21;
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  color-scheme:dark;
+}
+
+/* 테마 전환 버튼 */
+.theme-btn{
+  display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+  transition:border-color .14s,color .14s,background .14s;
+}
+.theme-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.theme-btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.theme-btn .ti{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.theme-btn .moon{fill:currentColor;stroke:none}
+.theme-btn .sun{display:none}
+html[data-theme="dark"] .theme-btn .sun{display:block}
+html[data-theme="dark"] .theme-btn .moon{display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -64,7 +104,7 @@ button{cursor:pointer;border:none;background:none}
   border:1px solid var(--line);background:var(--card);
   color:var(--ink-2);font-size:16px;line-height:1;
   transition:border-color .14s,background .14s,color .14s;text-decoration:none;}
-.home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.home:hover{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
 .brand h1{font-weight:900;font-size:19px;line-height:1.2;letter-spacing:-.03em}
@@ -80,8 +120,8 @@ button{cursor:pointer;border:none;background:none}
 }
 .btn:hover{border-color:var(--ink-3)}
 .btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
-.btn-solid{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btn-solid:hover{background:#000;border-color:#000}
+.btn-solid{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--ink)}
+.btn-solid:hover{background:var(--inv-bg-h);border-color:var(--inv-bg-h)}
 .btn-ghost{border-color:transparent;color:var(--ink-2)}
 .btn-ghost:hover{background:var(--line-2);border-color:transparent}
 .btn .sm{display:none}
@@ -125,7 +165,7 @@ button{cursor:pointer;border:none;background:none}
   display:flex;align-items:center;gap:9px;padding:8px 10px;
   border:1px solid var(--line);border-radius:7px;background:var(--card);
 }
-.item.on{border-color:var(--ink);background:#fafafa}
+.item.on{border-color:var(--ink);background:var(--line-2)}
 .item .nm{flex:1;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .item .sub{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-3)}
 .chip{
@@ -169,7 +209,7 @@ button{cursor:pointer;border:none;background:none}
   border:1px solid var(--line);font-size:13px;font-weight:700;transition:border-color .14s;
 }
 .bsel:hover{border-color:var(--ink-3)}
-.bsel.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.bsel.on{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .bsel .dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
 .bsel.on .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.5)}
 .bsel.era{border-style:dashed;color:var(--ink-3)}
@@ -185,7 +225,7 @@ button{cursor:pointer;border:none;background:none}
   border-radius:8px;
   max-width:100%;
 }
-.doc{background:#fff;min-width:0}
+.doc{background:var(--card);min-width:0}
 .doc-h{margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid var(--ink)}
 .doc-h h2{font-size:21px;font-weight:900;letter-spacing:-.03em}
 .doc-h p{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);margin-top:3px}
@@ -194,37 +234,37 @@ table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
 th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center;font-size:12px}
 th:first-child,td:first-child{border-left:1px solid var(--line)}
 thead th{
-  background:#f3f4f7;padding:7px 1px;font-weight:700;font-size:11px;color:var(--ink-2);
+  background:var(--th-bg);padding:7px 1px;font-weight:700;font-size:11px;color:var(--ink-2);
   border-top:1px solid var(--line);
   position:sticky;top:0;z-index:20;
 }
 thead th:first-child{left:0;z-index:22}
-thead th.sat{color:#2f6fd0}
+thead th.sat{color:var(--sat)}
 thead th.sun{color:var(--mark)}
-thead th.hol{color:var(--mark);background:#fdeeeb}
-td.cell.hd{background:#fef7f5}
+thead th.hol{color:var(--mark);background:var(--mark-soft)}
+td.cell.hd{background:var(--hol-bg)}
 td.cell.hd:hover{background:var(--line-2)}
 td.cell.na{
-  background:repeating-linear-gradient(135deg,#f4f4f6 0 5px,#eceef3 5px 10px);
+  background:repeating-linear-gradient(135deg,var(--na-a) 0 5px,var(--na-b) 5px 10px);
   cursor:default;
 }
-td.cell.na:hover{background:repeating-linear-gradient(135deg,#f4f4f6 0 5px,#eceef3 5px 10px)}
+td.cell.na:hover{background:repeating-linear-gradient(135deg,var(--na-a) 0 5px,var(--na-b) 5px 10px)}
 tbody th{
-  background:#fafbfc;padding:8px 8px;text-align:left;font-weight:700;font-size:12.5px;
+  background:var(--rowh-bg);padding:8px 8px;text-align:left;font-weight:700;font-size:12.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   position:sticky;left:0;z-index:10;
 }
 .nmcol{width:84px}
 td.cell{padding:0;height:34px;cursor:pointer;position:relative;z-index:0;transition:background .1s}
 td.cell:hover{background:var(--line-2)}
-td.cell.wk{background:#fbfbfd}
+td.cell.wk{background:var(--wk-bg)}
 td.cell.wk:hover{background:var(--line-2)}
 .mk{
   position:absolute;inset:2px;border-radius:4px;display:grid;place-items:center;
   font-weight:900;font-size:11.5px;
 }
 tfoot td,tfoot th{
-  background:#f3f4f7;font-family:'IBM Plex Mono',monospace;font-size:11px;
+  background:var(--th-bg);font-family:'IBM Plex Mono',monospace;font-size:11px;
   font-weight:600;color:var(--ink-2);padding:6px 3px;
   border-top:1px solid var(--line);
   position:sticky;bottom:0;z-index:20;
@@ -264,13 +304,13 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(70px);
-  background:var(--ink);color:#fff;padding:11px 20px;border-radius:9px;
+  background:var(--inv-bg);color:var(--inv-fg);padding:11px 20px;border-radius:9px;
   font-size:13.5px;font-weight:700;opacity:0;transition:all .22s;z-index:100;pointer-events:none;
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* 재직 중이 아닌 직원 */
-.item.off{background:#fafafa;border-style:dashed}
+.item.off{background:var(--line-2);border-style:dashed}
 .item.off .nm{color:var(--ink-3)}
 
 /* 지난 직원 접힘 */
@@ -318,7 +358,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   font-size:12.5px;font-weight:900;color:var(--ink-2);
 }
 .dow-r.wk .dw{color:var(--mark)}
-.dow-r:nth-last-child(2) .dw{color:#2f6fd0}
+.dow-r:nth-last-child(2) .dw{color:var(--sat)}
 .dw-s{flex:1;min-width:0;padding:7px 8px;font-size:12.5px}
 .dw-c{flex-shrink:0;font-size:11px;gap:4px}
 .dw-c input{width:14px;height:14px}
@@ -342,7 +382,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   background:transparent;border:none;text-align:center;line-height:1.15;
 }
 .prev-t th span{font-weight:400;font-size:8px}
-.prev-t th.sun{color:var(--mark)} .prev-t th.sat{color:#2f6fd0}
+.prev-t th.sun{color:var(--mark)} .prev-t th.sat{color:var(--sat)}
 .prev-t td{border:none;padding:1px}
 .prev-t .pn{
   font-size:10.5px;font-weight:700;color:var(--ink-2);padding:2px 6px 2px 8px;
@@ -353,7 +393,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   display:block;border-radius:3px;font-size:9.5px;font-weight:800;
   padding:3px 0;min-width:17px;
 }
-.prev-t .pv.off{background:repeating-linear-gradient(135deg,#f4f4f6 0 3px,#eceef3 3px 6px)}
+.prev-t .pv.off{background:repeating-linear-gradient(135deg,var(--na-a) 0 3px,var(--na-b) 3px 6px)}
 .prev-more{padding:6px 10px;border-top:1px solid var(--line-2);font-size:10.5px;color:var(--ink-3)}
 .patrow{display:flex;gap:4px;flex-wrap:wrap;min-height:28px;align-items:center;margin-bottom:9px}
 .patrow .ph{font-size:11.5px;color:var(--ink-3)}
@@ -383,7 +423,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 .mbtn em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--ink-3);flex-shrink:0}
 .mbtn b{font-size:12px;font-weight:700;color:var(--ink-3);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
-.mbtn.set{border-color:var(--ink-3);background:#fafafa}
+.mbtn.set{border-color:var(--ink-3);background:var(--line-2)}
 .mbtn.set b{color:var(--ink)}
 
 /* 월 선택 팝업 */
@@ -402,23 +442,23 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
   font-variant-numeric:tabular-nums}
 .pk-nav{width:34px;height:34px;border-radius:8px;color:var(--ink-2);font-size:17px;
   display:grid;place-items:center;border:1px solid var(--line)}
-.pk-nav:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.pk-nav:hover{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .pk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:10px 14px 6px}
 .pk-w{
   display:grid;place-items:center;height:26px;
   font-size:11px;font-weight:700;color:var(--ink-3);
 }
-.pk-w.sun{color:var(--mark)} .pk-w.sat{color:#2f6fd0}
+.pk-w.sun{color:var(--mark)} .pk-w.sat{color:var(--sat)}
 .pk-d{
   height:38px;border-radius:8px;border:1px solid transparent;background:var(--card);
   font-size:13px;font-weight:700;color:var(--ink-2);transition:all .1s;
   font-variant-numeric:tabular-nums;
 }
-.pk-d.sun{color:var(--mark)} .pk-d.sat{color:#2f6fd0}
+.pk-d.sun{color:var(--mark)} .pk-d.sat{color:var(--sat)}
 .pk-d:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
-.pk-d.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.pk-d.on{background:var(--inv-bg);border-color:var(--inv-bg);color:var(--inv-fg)}
 .pk-d.now{border-color:var(--mark)}
-.pk-d.on.now{color:#fff}
+.pk-d.on.now{color:var(--inv-fg)}
 .pk-d:disabled{color:var(--line);cursor:default;background:transparent}
 .pk-d:focus-visible{outline:2px solid var(--mark);outline-offset:1px}
 .pk-note{
@@ -450,7 +490,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 .mv:disabled:hover{background:none;color:var(--ink-3)}
 .mv.era{font-size:12px}
 .mv.era:hover{background:var(--mark-soft);color:var(--mark)}
-.prow.off{background:#fafafa;border-style:dashed}
+.prow.off{background:var(--line-2);border-style:dashed}
 .prow.off .nm{color:var(--ink-3)}
 .ptop{display:flex;align-items:center;gap:8px}
 .ptop .nm{flex:1;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -526,6 +566,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
 .doc.capture tfoot td,
 .doc.capture tfoot th{position:static!important}
 </style>
+<link rel="stylesheet" href="../assets/motion.css">
 </head>
 <body>
 
@@ -541,7 +582,7 @@ tfoot th{text-align:left;padding-left:8px;left:0;z-index:22}
     <button class="btn" id="print">인쇄</button>
     <button class="btn btn-solid" id="png"><span class="lg">이미지로 저장</span><span class="sm">이미지</span></button>
     <input type="file" id="loadfile" accept=".json,application/json" hidden>
-  </div>
+  <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
 
 <div class="wrap">
@@ -1579,12 +1620,22 @@ $('loadfile').addEventListener('change',e=>{
 });
 
 $('print').addEventListener('click',()=>window.print());
+/* 인쇄물과 이미지는 흰 종이 기준이므로, 내보내는 동안만 라이트로 바꾼다 */
+function withLightTheme(fn){
+  const r=document.documentElement;
+  const prev=r.getAttribute('data-theme');
+  r.setAttribute('data-theme','light');
+  return Promise.resolve().then(fn).finally(()=>{
+    if(prev)r.setAttribute('data-theme',prev);
+  });
+}
+
 $('png').addEventListener('click',async()=>{
   if(!S.people.length||!S.types.length){toast('먼저 직원과 근무 유형을 등록하세요');return}
   toast('이미지를 만드는 중입니다');
   doc.classList.add('capture');
   try{
-    const c=await html2canvas(doc,{backgroundColor:'#ffffff',scale:2});
+    const c=await withLightTheme(()=>html2canvas(doc,{backgroundColor:'#ffffff',scale:2}));
     c.toBlob(b=>{
       if(!b){toast('이미지 저장에 실패했습니다. 인쇄를 이용하세요');return}
       download(b,autoName('png'));
@@ -1618,5 +1669,7 @@ function init(){
 load();init();
 window.addEventListener('load',syncTopbar);
 </script>
+<script src="../assets/theme.js" defer></script>
+<script src="../assets/motion.js" defer></script>
 </body>
 </html>

@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>급여명세서 만들기 — 소규모 사업장을 위한 급여명세서 서식</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
@@ -28,7 +34,34 @@
   --take:#b4432e;--take-soft:#fbeeea;
   --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
   --topbar:69px;
+
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
 }
+
+/* ---------- 다크 모드 ---------- */
+html[data-theme="dark"]{
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
+  --mark:#ff6f57; --mark-soft:#3b201b;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  color-scheme:dark;
+}
+
+/* 테마 전환 버튼 */
+.theme-btn{
+  display:grid;place-items:center;flex-shrink:0;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+  transition:border-color .14s,color .14s,background .14s;
+}
+.theme-btn:hover{border-color:var(--ink-3);color:var(--ink)}
+.theme-btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
+.theme-btn .ti{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7}
+.theme-btn .moon{fill:currentColor;stroke:none}
+.theme-btn .sun{display:none}
+html[data-theme="dark"] .theme-btn .sun{display:block}
+html[data-theme="dark"] .theme-btn .moon{display:none}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
@@ -48,7 +81,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   border:1px solid var(--line);background:var(--card);
   color:var(--ink-2);font-size:16px;line-height:1;
   transition:border-color .14s,background .14s,color .14s;text-decoration:none;}
-.home:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.home:hover{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .home:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .brand{display:flex;align-items:baseline;gap:9px;margin-right:auto;color:inherit;text-decoration:none}
 .brand h1{font-weight:900;font-size:19px;line-height:1.2;letter-spacing:-.03em}
@@ -60,8 +93,8 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 }
 .btn:hover{border-color:var(--ink-3)}
 .btn:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
-.btn-solid{background:var(--ink);color:#fff;border-color:var(--ink)}
-.btn-solid:hover{background:#000;border-color:#000}
+.btn-solid{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--ink)}
+.btn-solid:hover{background:var(--inv-bg-h);border-color:var(--inv-bg-h)}
 .btn-ghost{border-color:transparent;color:var(--ink-2)}
 .btn-ghost:hover{background:var(--line-2);border-color:transparent}
 
@@ -144,7 +177,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   padding:8px 12px;border-radius:7px;border:1px solid var(--line);
   font-size:12.5px;font-weight:700;white-space:nowrap;transition:all .14s;flex-shrink:0;
 }
-.tb-btn:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.tb-btn:hover{border-color:var(--ink);background:var(--inv-bg);color:var(--inv-fg)}
 .tb-rate{width:66px;flex-shrink:0;padding:8px 9px;border:1px solid var(--line);border-radius:7px;font-size:13px;text-align:right}
 .tb-rate:focus{outline:none;border-color:var(--ink)}
 .tb-unit{font-size:12px;color:var(--ink-3);flex-shrink:0}
@@ -152,13 +185,13 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .tb-note b{color:var(--ink-2);font-weight:700}
 .tb-wide{
   width:100%;padding:10px;border-radius:7px;border:1px solid var(--ink);
-  background:var(--ink);color:#fff;font-size:13px;font-weight:700;
+  background:var(--inv-bg);color:var(--inv-fg);font-size:13px;font-weight:700;
   margin-bottom:10px;transition:background .14s;
 }
-.tb-wide:hover{background:#000}
+.tb-wide:hover{background:var(--inv-bg-h)}
 .tb-wide:focus-visible{outline:2px solid var(--mark);outline-offset:2px}
 .tb-wide.alt{background:var(--card);color:var(--ink);border-color:var(--line);margin-bottom:0}
-.tb-wide.alt:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tb-wide.alt:hover{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--ink)}
 .tb-case{
   background:var(--card);border:1px solid var(--line);border-radius:8px;
   padding:12px;margin-bottom:9px;
@@ -235,7 +268,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(70px);
-  background:var(--ink);color:#fff;padding:11px 20px;border-radius:9px;
+  background:var(--inv-bg);color:var(--inv-fg);padding:11px 20px;border-radius:9px;
   font-size:13.5px;font-weight:700;opacity:0;transition:all .22s;z-index:100;pointer-events:none;
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -257,6 +290,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   .slip{border:1px solid #222;max-width:none}
 }
 </style>
+<link rel="stylesheet" href="../assets/motion.css">
 </head>
 <body>
 
@@ -270,7 +304,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
     <button class="btn" id="print">인쇄</button>
     <button class="btn btn-solid" id="png">이미지로 저장</button>
     <input type="file" id="loadfile" accept=".json,application/json" hidden>
-  </div>
+  <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
 
 <div class="wrap">
@@ -785,5 +819,7 @@ function init(){
 }
 load();init();applyRates();loadRates();
 </script>
+<script src="../assets/theme.js" defer></script>
+<script src="../assets/motion.js" defer></script>
 </body>
 </html>

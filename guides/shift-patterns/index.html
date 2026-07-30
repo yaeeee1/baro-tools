@@ -2,6 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+
 <title>교대근무 유형 이름과 색상 정하는 법 | baro-tools 가이드</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
 <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96">
@@ -14,9 +21,10 @@
 <meta property="og:type" content="article"><meta property="og:title" content="교대근무 유형 이름과 색상 정하는 법"><meta property="og:description" content="누구나 바로 읽을 수 있는 근무표 표기 원칙"><meta property="og:url" content="https://baro-tools.com/guides/shift-patterns/">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="../../assets/content.css">
+<link rel="stylesheet" href="../../assets/motion.css">
 </head>
 <body>
-<header class="top"><div class="top-in"><a class="brand" href="../../index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a><nav class="nav" aria-label="주요 메뉴"><a href="../../index.html#tools">도구</a><a href="../index.html">활용 가이드</a><a href="../../about.html">운영 안내</a></nav></div></header>
+<header class="top"><div class="top-in"><a class="brand" href="../../index.html"><b>baro-tools</b><span>바로 쓰는 도구 모음</span></a><nav class="nav" aria-label="주요 메뉴"><a href="../../index.html#tools">도구</a><a href="../index.html">활용 가이드</a><a href="../../about.html">운영 안내</a></nav><button class="theme-btn" id="themeBtn" type="button"></button></div></header>
 <main>
   <section class="hero"><span class="eyebrow">SHIFT PATTERNS</span><h1>교대근무 유형 이름과 색상 정하는 법</h1><p class="lead">근무표가 복잡해지는 가장 흔한 이유는 근무 종류가 많아서가 아니라, 표기 기준이 섞여 있기 때문입니다. 이름·시간·색상의 역할을 나누면 작은 화면에서도 훨씬 쉽게 읽힙니다.</p><div class="meta"><span>작성: baro-tools 운영자</span><span>최근 검토: 2026년 7월 27일</span><span>읽는 시간 약 3분</span></div></section>
   <div class="layout">
@@ -77,5 +85,7 @@
   </div>
 </main>
 <footer><div class="flinks"><a href="../index.html">가이드 목록</a><a href="../../schedule/index.html">근무표 도구</a><a href="../../about.html">운영 안내</a><a href="../../privacy.html">개인정보처리방침</a></div>© 2026 baro-tools · justbarotools@gmail.com</footer>
+<script src="../../assets/theme.js" defer></script>
+<script src="../../assets/motion.js" defer></script>
 </body>
 </html>

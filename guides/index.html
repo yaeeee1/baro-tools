@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 화면이 흰색으로 번쩍이지 않도록 CSS 적용 전에 테마를 정한다 */
+(function(){try{var t=localStorage.getItem('baro-theme');
+if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>활용 가이드 — 근무표·시간표·급여명세서 작성 도움말 | baro-tools</title>
 <link rel="icon" href="/favicon.ico" sizes="48x48 96x96">
@@ -20,6 +26,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/content.css">
+<link rel="stylesheet" href="../assets/motion.css">
 </head>
 <body>
 <header class="top">
@@ -30,7 +37,7 @@
       <a href="index.html" aria-current="page">활용 가이드</a>
       <a href="../about.html">운영 안내</a>
     </nav>
-  </div>
+  <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
 <main>
   <section class="hero">
@@ -119,5 +126,7 @@
   </div>
   © 2026 baro-tools · justbarotools@gmail.com
 </footer>
+<script src="../assets/theme.js" defer></script>
+<script src="../assets/motion.js" defer></script>
 </body>
 </html>
