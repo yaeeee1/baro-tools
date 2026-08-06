@@ -41,7 +41,8 @@ html[data-theme="dark"] .theme-btn .sun{opacity:1;transform:rotate(0deg) scale(1
 @keyframes btnPress{50%{transform:scale(.95)}}
 .btn:active,.tb-btn:active,.tb-wide:active,.tb-case:active,.tx:active,
 .home:active,.addline:active,.tag:active,.x:active,.pk-nav:active,
-.pk-clear:active,.guide-card:active,.card:not(.soon):active{
+.pk-clear:active,.guide-card:active,.card:not(.soon):active,
+.t-card:not(.soon):active,.btn-cta:active{
   animation:btnPress var(--dur-1) var(--ease-out);
 }
 
@@ -116,6 +117,17 @@ html[data-theme="dark"] .top.is-scrolled{box-shadow:0 6px 20px rgba(0,0,0,.3)}
 .tags .tag:nth-child(3){animation-delay:200ms}
 .tags .tag:nth-child(4){animation-delay:240ms}
 .tags .tag:nth-child(5){animation-delay:280ms}
+
+/* -------------------- 신뢰 스트립 순차 등장 (index.html) -------------------- */
+.strip-in .pill{animation:chipIn var(--dur-3) var(--ease-out) both}
+.strip-in .pill:nth-child(1){animation-delay:140ms}
+.strip-in .pill:nth-child(2){animation-delay:180ms}
+.strip-in .pill:nth-child(3){animation-delay:220ms}
+.strip-in .pill:nth-child(4){animation-delay:260ms}
+
+/* -------------------- 히어로 비주얼 카드 등장 (index.html) -------------------- */
+@keyframes hvIn{from{opacity:0;transform:rotate(-1.4deg) translateY(18px) scale(.97)}to{opacity:1;transform:rotate(-1.4deg) translateY(0) scale(1)}}
+.hv-card{animation:hvIn var(--dur-4) var(--ease-out) both;animation-delay:80ms}
 
 /* ==========================================================================
    결과물 캡처 영역 — html2canvas가 그대로 스냅샷하는 부분이므로
