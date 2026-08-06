@@ -44,7 +44,7 @@ document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
     <span class="eyebrow">GUIDES</span>
     <h1>표를 만들기 전에 알면 좋은 것들</h1>
     <p class="lead">도구의 버튼 설명만 모아 놓은 페이지가 아닙니다. 실제로 근무표, 수업 시간표, 급여명세서를 작성할 때 빠뜨리기 쉬운 항목과 검토 순서를 정리했습니다.</p>
-    <div class="meta"><span>최근 검토: 2026년 7월 27일</span><span>총 6개 가이드</span></div>
+    <div class="meta"><span>최근 검토: 2026년 7월 27일</span><span>총 <span id="guideCount">8</span>개 가이드</span></div>
   </section>
   <div class="layout">
     <aside class="toc" aria-label="가이드 분류">
@@ -128,5 +128,13 @@ document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 </footer>
 <script src="../assets/theme.js" defer></script>
 <script src="../assets/motion.js" defer></script>
+<script>
+/* 가이드를 추가·삭제해도 숫자가 어긋나지 않도록 실제 카드 수를 센다 */
+(function(){
+  var n=document.querySelectorAll('.cards .card').length;
+  var el=document.getElementById('guideCount');
+  if(el&&n)el.textContent=n;
+})();
+</script>
 </body>
 </html>

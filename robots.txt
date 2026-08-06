@@ -1,6 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /ADSENSE-CHECKLIST.md
-Disallow: /ads.txt.template
 
 Sitemap: https://baro-tools.com/sitemap.xml
