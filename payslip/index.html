@@ -27,24 +27,24 @@ document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{
-  --ink:#15161a;--ink-2:#484c57;--ink-3:#82869a;
-  --line:#e2e4ec;--line-2:#edeff4;--paper:#f8f7f3;--card:#fff;
+  --ink:#141519;--ink-2:#4a4d57;--ink-3:#8b8f9c;
+  --line:#dcdee6;--line-2:#eceef3;--paper:#f7f7f4;--card:#fff;
   --mark:#e8503a;--mark-soft:#fdeeeb;
   --give:#1f6d3a;--give-soft:#eaf5ee;
   --take:#b4432e;--take-soft:#fbeeea;
-  --shadow:0 1px 2px rgba(21,22,26,.04),0 10px 30px -12px rgba(21,22,26,.14);
+  --shadow:0 1px 2px rgba(20,21,25,.04),0 4px 16px rgba(20,21,25,.06);
   --topbar:69px;
 
-  --inv-bg:#15161a; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
+  --inv-bg:#141519; --inv-bg-h:#000; --inv-fg:#ffffff; --link:#245f9b;
 }
 
 /* ---------- 다크 모드 ---------- */
 html[data-theme="dark"]{
-  --ink:#eef0f5; --ink-2:#b6bbc7; --ink-3:#82869a;
-  --line:#2b2e38; --line-2:#22242c; --paper:#101115; --card:#1a1c23;
+  --ink:#eceef3; --ink-2:#b3b8c4; --ink-3:#868c9a;
+  --line:#2f333d; --line-2:#252932; --paper:#14151a; --card:#1c1e25;
   --mark:#ff6f57; --mark-soft:#3b201b;
-  --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px -12px rgba(0,0,0,.5);
-  --inv-bg:#eef0f5; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --inv-bg:#eceef3; --inv-bg-h:#ffffff; --inv-fg:#14151a; --link:#8ab4f8;
   color-scheme:dark;
 }
 
@@ -97,6 +97,7 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 .btn-solid:hover{background:var(--inv-bg-h);border-color:var(--inv-bg-h)}
 .btn-ghost{border-color:transparent;color:var(--ink-2)}
 .btn-ghost:hover{background:var(--line-2);border-color:transparent}
+.btn .sm{display:none}
 
 .wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
@@ -275,6 +276,14 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 
 @media(max-width:940px){
   .wrap{grid-template-columns:1fr;padding:16px;gap:16px}
+  .top-in{padding:10px 12px;gap:6px}
+  .brand h1{font-size:16px}
+  .brand span{display:none}
+  .btn{padding:8px 11px;font-size:12.5px}
+  .btn .lg{display:none}
+  .btn .sm{display:inline}
+  .home{width:30px;height:30px;margin-right:-2px}
+  .inp{font-size:16px}
   .help-content{grid-template-columns:1fr;padding:0 16px}
   .help-intro{grid-column:auto}
   .side{position:static;max-height:none;overflow:visible}
@@ -299,11 +308,11 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
   <div class="top-in">
     <a class="home" href="../index.html" aria-label="도구 목록으로 돌아가기"><span aria-hidden="true">←</span></a>
     <a class="brand" href="../index.html"><h1>급여명세서 만들기</h1><span>baro-tools</span></a>
-    <button class="btn btn-ghost" id="reset">전체 지우기</button>
-    <button class="btn" id="load">백업 불러오기</button>
-    <button class="btn" id="backup">백업 파일 저장</button>
+    <button class="btn btn-ghost" id="reset"><span class="lg">전체 지우기</span><span class="sm">지우기</span></button>
+    <button class="btn" id="load"><span class="lg">백업 불러오기</span><span class="sm">불러오기</span></button>
+    <button class="btn" id="backup"><span class="lg">백업 파일 저장</span><span class="sm">백업</span></button>
     <button class="btn" id="print">인쇄</button>
-    <button class="btn btn-solid" id="png">이미지로 저장</button>
+    <button class="btn btn-solid" id="png"><span class="lg">이미지로 저장</span><span class="sm">이미지</span></button>
     <input type="file" id="loadfile" accept=".json,application/json" hidden>
   <button class="theme-btn" id="themeBtn" type="button"></button></div>
 </header>
